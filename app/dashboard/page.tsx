@@ -220,12 +220,17 @@ function SomeChartPicker({
 const demoProfiles: Profile[] = [
   {
     name: "Visitors",
-    color: "fuchsia",
+    color: "red",
+    chartType: "bar",
+  },
+  {
+    name: "Sales",
+    color: "green",
     chartType: "bar",
   },
   {
     name: "Orders",
-    color: "amber",
+    color: "indigo",
     chartType: "line",
   },
   {
