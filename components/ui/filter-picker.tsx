@@ -52,7 +52,7 @@ export function FilterManager({
           <>
             {index > 0 && <CommandSeparator />}
             <CommandGroup key={name} className="p-3">
-              <div className="text-sm text-muted-foreground mb-1.5">
+              <div className="mb-1.5 text-sm text-muted-foreground">
                 {name[0].toUpperCase()}
                 {name.slice(1)}
               </div>
@@ -67,7 +67,7 @@ export function FilterManager({
                 >
                   <Check
                     className={cn(
-                      "h-4 w-4 absolute right-2",
+                      "absolute right-2 size-4",
                       filters?.[name] && filters[name]?.includes(value)
                         ? ""
                         : "hidden"
@@ -91,7 +91,7 @@ export function FilterList() {
     value?.map((v) => (
       <Badge
         key={name + v}
-        className="h-6 px-2 cursor-pointer"
+        className="h-6 cursor-pointer px-2"
         onClick={() => removeFilter(name, v)}
       >
         {v.charAt(0).toUpperCase()}
@@ -111,7 +111,7 @@ export function ScopedFilterPicker() {
 
       <Popover open={addFilterOpen} onOpenChange={setAddFilterOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-6 h-6">
+          <Button variant="ghost" size="icon" className="size-6">
             <PlusIcon className="h-5" />
           </Button>
         </PopoverTrigger>

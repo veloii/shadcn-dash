@@ -64,24 +64,24 @@ function SomeTopChartPicker({
   return (
     <div
       className={cn(
-        "rounded-lg min-w-56 flex cursor-default relative gap-1 px-2 text-left select-none h-9 transition",
+        "relative flex h-9 min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
         active
-          ? `text-foreground bg-muted ${colorClass[profile.color]}`
-          : "opacity-75 hover:opacity-100 dark:hover:bg-muted active:scale-[.98]",
+          ? `bg-muted text-foreground ${colorClass[profile.color]}`
+          : "opacity-75 hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
         className
       )}
       aria-selected={active}
       {...props}
     >
-      <div className="flex gap-1 items-center justify-between flex-grow">
-        <div className="flex gap-1 items-center">
+      <div className="flex grow items-center justify-between gap-1">
+        <div className="flex items-center gap-1">
           <Icon className="h-4" />
-          <div className="tracking-tight text-sm">{profile.name}</div>
+          <div className="text-sm tracking-tight">{profile.name}</div>
         </div>
         <div
           className={cn(
             "flex items-center",
-            active ? "opacity-100" : "opacity-0 pointer-events-none"
+            active ? "opacity-100" : "pointer-events-none opacity-0"
           )}
         >
           <ChartPickerActions />
@@ -105,24 +105,24 @@ function SomeSideChartPicker({
   return (
     <div
       className={cn(
-        "rounded-lg min-w-56 flex cursor-default relative gap-1 px-2 text-left select-none h-9 transition",
+        "relative flex h-9 min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
         active
-          ? `text-foreground bg-muted ${colorClass[profile.color]}`
-          : "opacity-75 hover:opacity-100 dark:hover:bg-muted active:scale-[.98]",
+          ? `bg-muted text-foreground ${colorClass[profile.color]}`
+          : "opacity-75 hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
         className
       )}
       aria-selected={active}
       {...props}
     >
-      <div className="flex gap-1 items-center justify-between flex-grow">
-        <div className="flex gap-1 items-center">
+      <div className="flex grow items-center justify-between gap-1">
+        <div className="flex items-center gap-1">
           <Icon className="h-4" />
-          <div className="tracking-tight text-sm">{profile.name}</div>
+          <div className="text-sm tracking-tight">{profile.name}</div>
         </div>
         <div
           className={cn(
             "flex items-center",
-            active ? "opacity-100" : "opacity-0 pointer-events-none"
+            active ? "opacity-100" : "pointer-events-none opacity-0"
           )}
         >
           <ChartPickerActions />
@@ -144,12 +144,12 @@ function ChartPickerActions() {
           <Button
             variant="ghost"
             size="icon"
-            className="w-7 h-7 relative hover:bg-foreground/10"
+            className="relative size-7 hover:bg-foreground/10"
           >
             {hasFilters && (
               <div
                 className={cn(
-                  "bg-foreground rounded-full w-1.5 h-1.5 right-0.5 top-0.5 absolute z-10"
+                  "absolute right-0.5 top-0.5 z-10 size-1.5 rounded-full bg-foreground"
                 )}
               ></div>
             )}
@@ -157,9 +157,9 @@ function ChartPickerActions() {
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="p-0 relative overflow-hidden">
+        <PopoverContent className="relative overflow-hidden p-0">
           {hasFilters && (
-            <div className="p-3 flex gap-2 flex-wrap absolute bottom-0 left-0 w-full z-10 from-background to-transparent from-[60%] pt-10 bg-gradient-to-t">
+            <div className="absolute bottom-0 left-0 z-10 flex w-full flex-wrap gap-2 bg-gradient-to-t from-background from-[60%] to-transparent p-3 pt-10">
               <FilterList />
             </div>
           )}
@@ -167,11 +167,11 @@ function ChartPickerActions() {
         </PopoverContent>
       </Popover>
       <Button
-        className={cn("w-7 h-7 p-1.5 hover:bg-foreground/10")}
+        className={cn("size-7 p-1.5 hover:bg-foreground/10")}
         variant="ghost"
         size="icon"
       >
-        <SettingsIcon className="w-full h-full opacity-75" />
+        <SettingsIcon className="size-full opacity-75" />
       </Button>
     </>
   )
@@ -191,7 +191,7 @@ function SomeChartPicker({
   return (
     <div
       className={cn(
-        "rounded-t-lg p-2 w-48 h-20 flex cursor-pointer relative flex-col justify-center gap-1 pr-4 px-4 text-left border border-b-2 select-none",
+        "relative flex h-20 w-48 cursor-pointer select-none flex-col justify-center gap-1 rounded-t-lg border border-b-2 p-2 px-4 text-left",
         active
           ? `bg-muted/50 ${"color"}`
           : "border-transparent hover:border-b-border hover:bg-muted/25",
@@ -200,15 +200,15 @@ function SomeChartPicker({
       aria-selected={active}
       {...props}
     >
-      <div className="text-sm opacity-75 flex gap-1 -ml-1">
+      <div className="-ml-1 flex gap-1 text-sm opacity-75">
         <Icon className="h-5" />
         {profile.chartType[0].toUpperCase() + profile.chartType.slice(1)}
       </div>
-      <div className="font-semibold tracking-tight text-lg">{profile.name}</div>
+      <div className="text-lg font-semibold tracking-tight">{profile.name}</div>
       <div
         className={cn(
-          "absolute bottom-4 right-4 flex justify-center items-center",
-          active ? "opacity-100" : "opacity-0 pointer-events-none"
+          "absolute bottom-4 right-4 flex items-center justify-center",
+          active ? "opacity-100" : "pointer-events-none opacity-0"
         )}
       >
         <ChartPickerActions />
@@ -247,12 +247,12 @@ function SomeInternalChartComponent() {
   if (type === "top")
     return (
       <div className="divide-y">
-        <div className="bg-muted/20 p-3 flex gap-2">
+        <div className="flex gap-2 bg-muted/20 p-3">
           <Button
             onClick={() => {
               setType("side")
             }}
-            className="h-9 w-9 p-2.5 active:scale-95 transition"
+            className="size-9 p-2.5 transition active:scale-95"
             variant="ghost"
           >
             <ArrowLeftToLine className="h-full" />
@@ -266,7 +266,7 @@ function SomeInternalChartComponent() {
             />
           ))}
         </div>
-        <div className="p-3 pt-5 flex-grow">
+        <div className="grow p-3 pt-5">
           <CombinedCharts />
         </div>
       </div>
@@ -274,12 +274,12 @@ function SomeInternalChartComponent() {
 
   return (
     <div className="flex divide-x">
-      <div className="bg-muted/20 p-3 relative">
+      <div className="relative bg-muted/20 p-3">
         <Button
           onClick={() => {
             setType("top")
           }}
-          className="h-9 w-9 p-2.5 active:scale-95 transition  absolute bottom-4"
+          className="absolute bottom-4 size-9 p-2.5 transition  active:scale-95"
           variant="ghost"
         >
           <ArrowUpToLine className="h-full" />
@@ -293,7 +293,7 @@ function SomeInternalChartComponent() {
           />
         ))}
       </div>
-      <div className="p-3 pt-5 flex-grow">
+      <div className="grow p-3 pt-5">
         <CombinedCharts />
       </div>
     </div>
@@ -312,8 +312,8 @@ export default function DashboardPage() {
   return (
     <div>
       <Header />
-      <div className="max-w-7xl mx-auto py-10">
-        <div className="rounded-lg border space-y-5">
+      <div className="mx-auto max-w-7xl py-10">
+        <div className="space-y-5 rounded-lg border">
           <SomeChartComponent />
         </div>
       </div>
