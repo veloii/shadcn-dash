@@ -38,7 +38,8 @@
     "sharp": "^0.33.2",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "valibot": "^0.27.0"
+    "valibot": "^0.27.0",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",

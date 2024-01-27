@@ -1,4 +1,3 @@
-import { useProfiles } from "@/contexts/profile"
 import { format, parseISO, subDays } from "date-fns"
 import {
   Area,
@@ -13,6 +12,7 @@ import {
 import { cn, Color } from "@/lib/utils"
 
 import { CustomTooltip } from "./tooltip"
+import { ChartProps } from '.'
 
 const areaColors: Record<Color, { dot: string; className: string }> = {
   primary: {
@@ -89,43 +89,29 @@ const areaColors: Record<Color, { dot: string; className: string }> = {
   },
 }
 
-export function AreaChart() {
-  const { currentProfile } = useProfiles()
-
-  const data: {
-    date: string
-    value: number
-  }[] = []
-  for (let num = 30; num >= 0; num--) {
-    data.push({
-      date: subDays(new Date(), num).toISOString().substr(0, 10),
-      value: 1 + Math.random(),
-    })
-  }
-
-  if (!currentProfile) return null
-
+export function AreaChart<T>({ data, color, x, y }: ChartProps<T>) {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <RechartAreaChart data={data}>
         <Area
-          dataKey="value"
+          dataKey={y as string}
           stroke=""
           fill=""
           className={cn(
             "transition-all",
-            currentProfile.color && areaColors[currentProfile.color].className
+            areaColors[color].className
           )}
           activeDot={{
             className: cn(
               "stroke-0 backdrop-blur-sm",
-              currentProfile.color && areaColors[currentProfile.color].dot
+              areaColors[color].dot
             ),
           }}
+          animationDuration={500}
         />
 
         <XAxis
-          dataKey="date"
+          dataKey={x as string}
           axisLine={false}
           tickLine={false}
           padding={{ left: 20, right: 20 }}
@@ -140,7 +126,7 @@ export function AreaChart() {
         />
 
         <YAxis
-          dataKey="value"
+          dataKey={y as string}
           axisLine={false}
           tickLine={false}
           tickCount={7}

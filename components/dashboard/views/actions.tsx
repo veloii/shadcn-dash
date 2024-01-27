@@ -1,18 +1,30 @@
 import { Button } from '@/components/ui/button'
-import { useFilters } from '@/contexts/filters'
-import { Profile } from '@/contexts/profile'
 import { cn } from '@/lib/utils'
 import { FilterIcon, SettingsIcon } from 'lucide-react'
 import React from 'react'
-import { FilterList, FilterManager } from '../../filter-picker'
-import { ProfileSettings } from './settings'
+import { ViewSettings } from './edit'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { View, useViewStore, useWithId } from '@/stores/view'
+import { FilterList, FiltersToggle } from '@/components/ui/filters-list'
 
-export function ProfilePickerActions({ profile }: { profile: Profile }) {
+const demoAvailableFilters = {
+  author: ["@pomber", "@jamesplease"],
+  is: ["open", "closed"],
+  label: ["bug", "enhancement"],
+  sort: ["created", "updated"],
+  user: ["pomber", "jamesplease"],
+}
+
+export function ViewActions({ view }: { view: View }) {
   const [addFilterOpen, setAddFilterOpen] = React.useState(false)
   const [settingsOpen, setSettingsOpen] = React.useState(false)
-  const { filters } = useFilters()
-  const hasFilters = Object.keys(filters).length > 0
+
+  const hasFilters = Object.keys(view.filters).length > 0
+
+  const withId = useWithId(view.id)
+
+  const addFilter = withId(useViewStore(s => s.add.filter))
+  const removeFilter = withId(useViewStore(s => s.remove.filter))
 
   return (
     <>
@@ -35,14 +47,25 @@ export function ProfilePickerActions({ profile }: { profile: Profile }) {
         </PopoverTrigger>
 
         <PopoverContent className="relative overflow-hidden p-0">
+
           {hasFilters && (
             <div className="absolute bottom-0 left-0 z-10 flex w-full flex-wrap gap-2 bg-gradient-to-t from-background from-[60%] to-transparent p-3 pt-10">
-              <FilterList />
+              <FilterList
+                filters={view.filters}
+                removeFilter={removeFilter}
+              />
             </div>
           )}
-          <FilterManager />
+
+          <FiltersToggle
+            availableFilters={demoAvailableFilters}
+            filters={view.filters}
+            addFilter={addFilter}
+            removeFilter={removeFilter}
+          />
         </PopoverContent>
       </Popover>
+
       <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -55,7 +78,7 @@ export function ProfilePickerActions({ profile }: { profile: Profile }) {
         </PopoverTrigger>
 
         <PopoverContent className="w-80">
-          <ProfileSettings profile={profile} />
+          <ViewSettings view={view} />
         </PopoverContent>
       </Popover>
     </>

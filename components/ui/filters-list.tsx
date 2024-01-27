@@ -1,7 +1,4 @@
-"use client"
-
 import * as React from "react"
-import { useFilters } from "@/contexts/filters"
 import { Check, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -13,19 +10,21 @@ import {
   CommandItem,
   CommandSeparator,
 } from "@/components/ui/command"
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Filters } from '@/stores/view'
 
-import { Badge } from "../ui/badge"
-import { ScrollArea } from "../ui/scroll-area"
-
-export function FilterManager({
-  onOpenChange,
-  closeWhenSelected = false,
+export function FiltersToggle({
+  availableFilters,
+  removeFilter,
+  addFilter,
+  filters
 }: {
-  onOpenChange?: (open: boolean) => void
-  closeWhenSelected?: boolean
+  availableFilters: Filters
+  removeFilter: (name: string, value: string) => void
+  addFilter: (name: string, value: string) => void
+  filters: Filters
 }) {
-  const { filters, availableFilters, removeFilter, addFilter } = useFilters()
-
   // biome-ignore lint: react-hooks/exhaustive-deps
   const toggleFilter = React.useCallback(
     (name: string, value: string) => {
@@ -56,7 +55,6 @@ export function FilterManager({
                   key={name + value}
                   value={value}
                   onSelect={() => {
-                    if (closeWhenSelected) onOpenChange?.(false)
                     toggleFilter?.(name, value)
                   }}
                 >
@@ -79,9 +77,10 @@ export function FilterManager({
   )
 }
 
-export function FilterList() {
-  const { filters, removeFilter } = useFilters()
-
+export function FilterList({ filters, removeFilter }: {
+  filters: Filters
+  removeFilter: (name: string, value: string) => void
+}) {
   return Object.entries(filters).map(([name, value]) =>
     value?.map((v) => (
       <Badge
@@ -96,3 +95,4 @@ export function FilterList() {
     ))
   )
 }
+

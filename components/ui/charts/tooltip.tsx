@@ -8,8 +8,8 @@ export function CustomTooltip({
 }: TooltipProps<string, string>) {
   const date = label ? formatRelative(parseISO(label), new Date()) : ""
 
-  if (active && payload) {
-    const { value } = payload?.[0]
+  if (active && payload && payload.length > 0) {
+    const { value } = payload[0]
 
     return (
       <div className="whitespace-nowrap rounded-md border bg-background/60 px-4 py-2 shadow backdrop-blur-sm transition-[width] duration-100 ease-in-out">

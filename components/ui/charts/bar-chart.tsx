@@ -1,4 +1,3 @@
-import { useProfiles } from "@/contexts/profile"
 import { format, parseISO, subDays } from "date-fns"
 import {
   Bar,
@@ -12,6 +11,7 @@ import {
 import { cn, Color } from "@/lib/utils"
 
 import { CustomTooltip } from "./tooltip"
+import { ChartProps } from '.'
 
 const colorClass: Record<Color, string> = {
   primary: "fill-primary/75",
@@ -34,26 +34,12 @@ const colorClass: Record<Color, string> = {
   rose: "fill-rose-400/75",
 }
 
-export function BarChart() {
-  const { currentProfile } = useProfiles()
-
-  const data: {
-    date: string
-    value: number
-  }[] = []
-  for (let num = 30; num >= 0; num--) {
-    data.push({
-      date: subDays(new Date(), num).toISOString().substr(0, 10),
-      value: 1 + Math.random(),
-    })
-  }
-  if (!currentProfile) return null
-
+export function BarChart<T>({ data, color, x, y }: ChartProps<T>) {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <RechartsBarChart data={data}>
         <XAxis
-          dataKey="date"
+          dataKey={x as string}
           axisLine={false}
           tickLine={false}
           padding={{ left: 20, right: 20 }}
@@ -67,7 +53,7 @@ export function BarChart() {
         />
 
         <YAxis
-          dataKey="value"
+          dataKey={y as string}
           axisLine={false}
           tickLine={false}
           tickCount={7}
@@ -88,10 +74,10 @@ export function BarChart() {
         />
 
         <Bar
-          dataKey="value"
+          dataKey={y as string}
           fill="currentColor"
           radius={[4, 4, 0, 0]}
-          className={cn("z-50 transition", colorClass[currentProfile.color])}
+          className={cn("z-50 transition", colorClass[color])}
         />
       </RechartsBarChart>
     </ResponsiveContainer>
