@@ -1,90 +1,58 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { useFilters } from "@/contexts/filters"
-import { Profile, Profiles, useProfiles } from "@/contexts/profile"
+import {
+  chartTypeIcons,
+  Profile,
+  Profiles,
+  useProfiles,
+} from "@/contexts/profile"
 import {
   ArrowLeftFromLine,
-  ArrowLeftToLine,
   ArrowUpToLine,
-  BarChart,
   FilterIcon,
-  LineChartIcon,
+  PlusIcon,
   SettingsIcon,
 } from "lucide-react"
 
-import { Color, cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn, colorClass } from "@/lib/utils"
+import { Button, ButtonProps } from "@/components/ui/button"
 import CombinedCharts from "@/components/ui/charts/combined-charts"
-import { FilterList, FilterManager } from "@/components/ui/filter-picker"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Header } from "@/components/dashboard/header"
+import {
+  FilterList,
+  FilterManager,
+} from "@/components/dashboard/profiles/filter-picker"
+import {
+  NewProfile,
+  ProfileSettings,
+} from "@/components/dashboard/profiles/profile-settings"
 
-const profileTypeIcons = {
-  line: LineChartIcon,
-  area: LineChartIcon,
-  bar: BarChart,
-} as const
+type TabsPosition = "top" | "side"
 
-const colorClass: Record<Color, string> = {
-  red: "text-red-700 dark:text-red-100 dark:bg-red-500/50",
-  orange: "text-orange-700 dark:text-orange-100 dark:bg-orange-500/50",
-  amber: "text-amber-700 dark:text-amber-100 dark:bg-amber-500/50",
-  yellow: "text-yellow-700 dark:text-yellow-100 dark:bg-yellow-500/50",
-  lime: "text-lime-700 dark:text-lime-100 dark:bg-lime-500/50",
-  green: "text-green-700 dark:text-green-100 dark:bg-green-500/50",
-  emerald: "text-emerald-700 dark:text-emerald-100 dark:bg-emerald-500/50",
-  teal: "text-teal-700 dark:text-teal-100 dark:bg-teal-500/50",
-  cyan: "text-cyan-700 dark:text-cyan-100 dark:bg-cyan-500/50",
-  sky: "text-sky-700 dark:text-sky-100 dark:bg-sky-500/50",
-  blue: "text-blue-700 dark:text-blue-100 dark:bg-blue-500/50",
-  indigo: "text-indigo-700 dark:text-indigo-100 dark:bg-indigo-500/50",
-  violet: "text-violet-700 dark:text-violet-100 dark:bg-violet-500/50",
-  purple: "text-purple-700 dark:text-purple-100 dark:bg-purple-500/50",
-  fuchsia: "text-fuchsia-700 dark:text-fuchsia-100 dark:bg-fuchsia-500/50",
-  pink: "text-pink-700 dark:text-pink-100 dark:bg-pink-500/50",
-  rose: "text-rose-700 dark:text-rose-100 dark:bg-rose-500/50",
-}
-
-function SomeTopChartPicker({
-  profile,
-  active = false,
+function SkeletonChartPicker({
   className,
   ...props
-}: {
-  active?: boolean
-  profile: Profile
-} & Omit<React.ComponentPropsWithoutRef<"div">, "children" | "type" | "id">) {
-  const Icon = profileTypeIcons[profile.chartType]
-
+}: Omit<React.ComponentPropsWithoutRef<"div">, "children" | "type" | "id">) {
   return (
     <div
       className={cn(
-        "relative flex h-9 min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
-        active
-          ? `bg-muted text-foreground ${colorClass[profile.color]}`
-          : "opacity-75 hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
+        "relative flex h-9 min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition animate-pulse",
         className
       )}
-      aria-selected={active}
+      aria-selected={false}
       {...props}
     >
       <div className="flex grow items-center justify-between gap-1">
         <div className="flex items-center gap-1">
-          <Icon className="h-4" />
-          <div className="text-sm tracking-tight">{profile.name}</div>
-        </div>
-        <div
-          className={cn(
-            "flex items-center",
-            active ? "opacity-100" : "pointer-events-none opacity-0"
-          )}
-        >
-          <ChartPickerActions />
+          <div className="h-5 w-5 rounded bg-foreground/10"></div>
+          <div className="text-sm tracking-tight h-5 rounded bg-muted w-32"></div>
         </div>
       </div>
     </div>
@@ -100,7 +68,7 @@ function SomeSideChartPicker({
   active?: boolean
   profile: Profile
 } & Omit<React.ComponentPropsWithoutRef<"div">, "children" | "type" | "id">) {
-  const Icon = profileTypeIcons[profile.chartType]
+  const Icon = chartTypeIcons[profile.chartType]
 
   return (
     <div
@@ -125,15 +93,16 @@ function SomeSideChartPicker({
             active ? "opacity-100" : "pointer-events-none opacity-0"
           )}
         >
-          <ChartPickerActions />
+          <ChartPickerActions profile={profile} />
         </div>
       </div>
     </div>
   )
 }
 
-function ChartPickerActions() {
+function ChartPickerActions({ profile }: { profile: Profile }) {
   const [addFilterOpen, setAddFilterOpen] = React.useState(false)
+  const [settingsOpen, setSettingsOpen] = React.useState(false)
   const { filters } = useFilters()
   const hasFilters = Object.keys(filters).length > 0
 
@@ -166,134 +135,127 @@ function ChartPickerActions() {
           <FilterManager />
         </PopoverContent>
       </Popover>
-      <Button
-        className={cn("size-7 p-1.5 hover:bg-foreground/10")}
-        variant="ghost"
-        size="icon"
-      >
-        <SettingsIcon className="size-full opacity-75" />
-      </Button>
+      <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative size-7 hover:bg-foreground/10"
+          >
+            <SettingsIcon className="h-4 opacity-75" />
+          </Button>
+        </PopoverTrigger>
+
+        <PopoverContent className="w-80">
+          <ProfileSettings profile={profile} />
+        </PopoverContent>
+      </Popover>
     </>
   )
 }
 
-function SomeChartPicker({
-  profile,
-  active = false,
+function AddProfileButton({
   className,
+  tabsPosition,
   ...props
-}: {
-  active?: boolean
-  profile: Profile
-} & Omit<React.ComponentPropsWithoutRef<"div">, "children" | "type" | "id">) {
-  const Icon = profileTypeIcons[profile.chartType]
+}: Omit<ButtonProps, "type"> & {
+  tabsPosition: TabsPosition
+}) {
+  const { addProfile, selectProfile } = useProfiles()
+  const [open, setOpen] = useState(false)
+
+  const onAddProfile = React.useCallback((newProfile: Profile) => {
+    const { id } = addProfile(newProfile)
+    selectProfile(id)
+    setOpen(false)
+  }, [])
 
   return (
-    <div
-      className={cn(
-        "relative flex h-20 w-48 cursor-pointer select-none flex-col justify-center gap-1 rounded-t-lg border border-b-2 p-2 px-4 text-left",
-        active
-          ? `bg-muted/50 ${"color"}`
-          : "border-transparent hover:border-b-border hover:bg-muted/25",
-        className
-      )}
-      aria-selected={active}
-      {...props}
-    >
-      <div className="-ml-1 flex gap-1 text-sm opacity-75">
-        <Icon className="h-5" />
-        {profile.chartType[0].toUpperCase() + profile.chartType.slice(1)}
-      </div>
-      <div className="text-lg font-semibold tracking-tight">{profile.name}</div>
-      <div
-        className={cn(
-          "absolute bottom-4 right-4 flex items-center justify-center",
-          active ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-      >
-        <ChartPickerActions />
-      </div>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          className={cn(
+            "size-9 p-2.5 transition active:scale-95",
+            tabsPosition === "side" && "absolute bottom-4 right-4",
+            className
+          )}
+          variant="ghost"
+          {...props}
+        >
+          <PlusIcon className="h-full" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <NewProfile onAddProfile={onAddProfile} />
+      </PopoverContent>
+    </Popover>
   )
 }
 
-const demoProfiles: Profile[] = [
-  {
-    name: "Visitors",
-    color: "red",
-    chartType: "bar",
-  },
-  {
-    name: "Sales",
-    color: "green",
-    chartType: "bar",
-  },
-  {
-    name: "Orders",
-    color: "indigo",
-    chartType: "line",
-  },
-  {
-    name: "Revenue",
-    color: "teal",
-    chartType: "area",
-  },
-]
-
-function SomeInternalChartComponent() {
-  const { selectProfile, currentProfile, profiles } = useProfiles()
-  const [type, setType] = React.useState<"top" | "side">("side")
-
-  if (type === "top")
-    return (
-      <div className="divide-y">
-        <div className="flex gap-2 bg-muted/20 p-3">
-          <Button
-            onClick={() => {
-              setType("side")
-            }}
-            className="size-9 p-2.5 transition active:scale-95"
-            variant="ghost"
-          >
-            <ArrowLeftToLine className="h-full" />
-          </Button>
-          {profiles.map((profile) => (
-            <SomeTopChartPicker
-              active={currentProfile?.name === profile.name}
-              key={profile.name}
-              onClick={() => selectProfile(profile.name)}
-              profile={profile}
-            />
-          ))}
-        </div>
-        <div className="grow p-3 pt-5">
-          <CombinedCharts />
-        </div>
-      </div>
-    )
+function MoveTabsPosition({
+  className,
+  tabsPosition,
+  onClick,
+  onChangeType,
+  ...props
+}: Omit<ButtonProps, "type"> & {
+  tabsPosition: TabsPosition
+  onChangeType: (_: TabsPosition) => void
+}) {
+  const MovePositionIcon =
+    tabsPosition === "top" ? ArrowLeftFromLine : ArrowUpToLine
 
   return (
-    <div className="flex divide-x">
-      <div className="relative bg-muted/20 p-3">
-        <Button
-          onClick={() => {
-            setType("top")
-          }}
-          className="absolute bottom-4 size-9 p-2.5 transition  active:scale-95"
-          variant="ghost"
-        >
-          <ArrowUpToLine className="h-full" />
-        </Button>
-        {profiles.map((profile) => (
-          <SomeSideChartPicker
-            active={currentProfile?.name === profile.name}
-            key={profile.name}
-            onClick={() => selectProfile(profile.name)}
-            profile={profile}
-          />
-        ))}
+    <Button
+      onClick={(e) => {
+        onClick?.(e)
+        onChangeType(tabsPosition === "top" ? "side" : "top")
+      }}
+      className={cn(
+        "size-9 p-2.5 transition active:scale-95",
+        tabsPosition === "side" && "absolute bottom-4",
+        className
+      )}
+      variant="ghost"
+      {...props}
+    >
+      <MovePositionIcon className="h-full" />
+    </Button>
+  )
+}
+
+function SomeInternalChartComponent() {
+  const { loading, selectProfile, currentProfile, profiles } = useProfiles()
+  const [type, setType] = React.useState<"top" | "side">("side")
+
+  return (
+    <div className={cn(type === "top" ? "divide-y" : "flex divide-x")}>
+      <div
+        className={cn(
+          "relative bg-muted/20 p-3",
+          type === "top" && "flex gap-2"
+        )}
+      >
+        <MoveTabsPosition
+          tabsPosition={type}
+          onChangeType={setType}
+          disabled={loading}
+        />
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonChartPicker key={i} />
+            ))
+          : profiles.map((profile) => (
+              <SomeSideChartPicker
+                active={currentProfile?.id === profile.id}
+                key={profile.id}
+                onClick={() => selectProfile(profile.id)}
+                profile={profile}
+              />
+            ))}
+        <AddProfileButton tabsPosition={type} disabled={loading} />
       </div>
-      <div className="grow p-3 pt-5">
+      <div className="grow p-3 pt-5 min-h-[432px]">
         <CombinedCharts />
       </div>
     </div>
@@ -302,7 +264,7 @@ function SomeInternalChartComponent() {
 
 function SomeChartComponent() {
   return (
-    <Profiles initialProfiles={demoProfiles}>
+    <Profiles syncKey="hello">
       <SomeInternalChartComponent />
     </Profiles>
   )

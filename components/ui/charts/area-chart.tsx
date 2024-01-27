@@ -1,4 +1,4 @@
-import { useCurrentProfile } from "@/contexts/profile"
+import { useProfiles } from "@/contexts/profile"
 import { format, parseISO, subDays } from "date-fns"
 import {
   Area,
@@ -10,11 +10,15 @@ import {
   YAxis,
 } from "recharts"
 
-import { Color, cn } from "@/lib/utils"
+import { cn, Color } from "@/lib/utils"
 
 import { CustomTooltip } from "./tooltip"
 
 const areaColors: Record<Color, { dot: string; className: string }> = {
+  primary: {
+    dot: "fill-primary",
+    className: "fill-primary/5 stroke-primary",
+  },
   red: {
     dot: "fill-red-500",
     className: "fill-red-500/5 stroke-red-500",
@@ -86,7 +90,7 @@ const areaColors: Record<Color, { dot: string; className: string }> = {
 }
 
 export function AreaChart() {
-  const profile = useCurrentProfile()
+  const { currentProfile } = useProfiles()
 
   const data: {
     date: string
@@ -99,6 +103,8 @@ export function AreaChart() {
     })
   }
 
+  if (!currentProfile) return null
+
   return (
     <ResponsiveContainer width="100%" height={400}>
       <RechartAreaChart data={data}>
@@ -108,12 +114,12 @@ export function AreaChart() {
           fill=""
           className={cn(
             "transition-all",
-            profile.color && areaColors[profile.color].className
+            currentProfile.color && areaColors[currentProfile.color].className
           )}
           activeDot={{
             className: cn(
               "stroke-0 backdrop-blur-sm",
-              profile.color && areaColors[profile.color].dot
+              currentProfile.color && areaColors[currentProfile.color].dot
             ),
           }}
         />

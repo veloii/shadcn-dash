@@ -1,4 +1,4 @@
-import { useCurrentProfile } from "@/contexts/profile"
+import { useProfiles } from "@/contexts/profile"
 
 import { AreaChart } from "./area-chart"
 import { BarChart } from "./bar-chart"
@@ -10,8 +10,10 @@ const charts = {
 } as const
 
 export default function CombinedCharts() {
-  const { chartType } = useCurrentProfile()
-  const Comp = charts[chartType]
+  const { currentProfile } = useProfiles()
+  if (!currentProfile) return null
+
+  const Comp = charts[currentProfile.chartType]
 
   return <Comp />
 }

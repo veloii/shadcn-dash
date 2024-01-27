@@ -2,10 +2,9 @@
 
 import * as React from "react"
 import { useFilters } from "@/contexts/filters"
-import { Check, PlusIcon, XIcon } from "lucide-react"
+import { Check, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -14,14 +13,9 @@ import {
   CommandItem,
   CommandSeparator,
 } from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
-import { Badge } from "./badge"
-import { ScrollArea } from "./scroll-area"
+import { Badge } from "../../ui/badge"
+import { ScrollArea } from "../../ui/scroll-area"
 
 export function FilterManager({
   onOpenChange,
@@ -99,27 +93,5 @@ export function FilterList() {
         <XIcon className="h-4" />
       </Badge>
     ))
-  )
-}
-
-export function ScopedFilterPicker() {
-  const [addFilterOpen, setAddFilterOpen] = React.useState(false)
-
-  return (
-    <div className="flex gap-2">
-      <FilterList />
-
-      <Popover open={addFilterOpen} onOpenChange={setAddFilterOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-6">
-            <PlusIcon className="h-5" />
-          </Button>
-        </PopoverTrigger>
-
-        <PopoverContent>
-          <FilterManager onOpenChange={setAddFilterOpen} />
-        </PopoverContent>
-      </Popover>
-    </div>
   )
 }
