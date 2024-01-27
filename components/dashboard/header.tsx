@@ -1,6 +1,4 @@
-import { BarChart2 } from "lucide-react"
 
-import { Button } from "../ui/button"
 import { OptionsPopover } from "./options-popover"
 
 export function Header() {

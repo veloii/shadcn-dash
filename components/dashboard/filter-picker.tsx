@@ -14,8 +14,8 @@ import {
   CommandSeparator,
 } from "@/components/ui/command"
 
-import { Badge } from "../../ui/badge"
-import { ScrollArea } from "../../ui/scroll-area"
+import { Badge } from "../ui/badge"
+import { ScrollArea } from "../ui/scroll-area"
 
 export function FilterManager({
   onOpenChange,
@@ -26,6 +26,7 @@ export function FilterManager({
 }) {
   const { filters, availableFilters, removeFilter, addFilter } = useFilters()
 
+  // biome-ignore lint: react-hooks/exhaustive-deps
   const toggleFilter = React.useCallback(
     (name: string, value: string) => {
       if (filters[name]?.includes(value)) {
@@ -62,7 +63,7 @@ export function FilterManager({
                   <Check
                     className={cn(
                       "absolute right-2 size-4",
-                      filters?.[name] && filters[name]?.includes(value)
+                      filters[name]?.includes(value)
                         ? ""
                         : "hidden"
                     )}

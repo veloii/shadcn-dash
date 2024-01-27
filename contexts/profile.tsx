@@ -11,7 +11,7 @@ export type ChartType = (typeof chartTypes)[number]
 
 export const ProfileSchema = v.object({
   id: v.number(),
-  name: v.string(),
+  stat: v.string(),
   chartType: v.picklist(chartTypes),
   color: v.picklist(colors),
   filters: v.record(v.array(v.string())),
@@ -25,7 +25,7 @@ export const chartTypeIcons: Record<ChartType, LucideIcon> = {
 
 export type Profile = {
   id: number
-  name: string
+  stat: string
   chartType: ChartType
   color: Color
 }
@@ -41,7 +41,7 @@ export type EditProfile = (
 ) => void
 export type RemoveProfile = (id: number) => void
 export type AddProfile = (
-  profile: WithoutId<Profile | WithFilters<Profile>>
+  stat: string
 ) => WithFilters<Profile>
 export type SetCurrentProfile = (id: number) => void
 export type ImportJson = (json: string) => void
@@ -54,44 +54,50 @@ export const ProfilesContext = createContext<{
   removeProfile: RemoveProfile
   editProfile: EditProfile
   selectProfile: SetCurrentProfile
+  stats: string[]
   loading: boolean
 }>({
   profiles: [],
   addProfile: () => {
     throw new Error("No profile provider")
   },
-  removeProfile: () => {},
-  editProfile: () => {},
-  selectProfile: () => {},
+  removeProfile: () => { },
+  editProfile: () => { },
+  selectProfile: () => { },
   currentProfile: undefined,
+  stats: [],
   loading: false,
 })
 
 const newId = () => new Date().valueOf()
+const randomColor = () => colors[Math.floor(Math.random() * colors.length)]
 
-export const Profiles = ({
-  initialProfiles = [],
+export const ProfilesProvider = ({
   children,
   syncKey,
 }: {
   children: React.ReactNode
-  initialProfiles?: Profile[]
   syncKey?: string
 }) => {
-  const [profiles, setProfiles] = React.useState<WithFilters<Profile>[]>(
-    initialProfiles.map((p) => ({ ...p, filters: {} }))
-  )
-
-  const [currentProfileId, setCurrentProfileId] = React.useState<number | null>(
-    profiles.length > 0 ? profiles[0].id : null
-  )
+  const [profiles, setProfiles] = React.useState<WithFilters<Profile>[]>([])
+  const [currentProfileId, setCurrentProfileId] = React.useState<number | null>(null)
 
   const [loading, setLoading] = React.useState(syncKey !== undefined)
 
-  const addProfile = React.useCallback<AddProfile>((profile) => {
-    const newProfile = { id: newId(), filters: {}, ...profile }
+  const stats = ["Page views", "Vistors", "Signups", "Purchases", "Revenue"];
+
+  const addProfile = React.useCallback<AddProfile>((stat) => {
+    let newProfile: WithFilters<Profile> = {
+      id: newId(), filters: {}, stat, chartType: "line", color: randomColor()
+    };
 
     setProfiles((profiles) => {
+      const existingProfile = profiles.find(p => p.stat === stat)
+      if (existingProfile) {
+        newProfile = existingProfile
+        return profiles
+      }
+
       const newProfiles = [...profiles, newProfile]
       syncToLocalStorage(newProfiles)
       return newProfiles
@@ -108,7 +114,7 @@ export const Profiles = ({
       syncToLocalStorage(newProfiles)
       return newProfiles
     })
-  }, [])
+  }, [currentProfileId]);
 
   const editProfile = React.useCallback<EditProfile>((id, profile) => {
     setProfiles((profiles) => {
@@ -131,7 +137,7 @@ export const Profiles = ({
         return undefined
       }
     },
-    [JSON.parse]
+    []
   )
 
   const currentProfile = useMemo(
@@ -159,12 +165,12 @@ export const Profiles = ({
   )
 
   useEffect(() => {
-    if (syncKey && loading) {
+    if (syncKey) {
       const json = localStorage.getItem(syncKey)
       if (json) importJson(json)
       setLoading(false)
     }
-  }, [syncKey])
+  }, [syncKey, importJson])
 
   return (
     <ProfilesContext.Provider
@@ -176,6 +182,7 @@ export const Profiles = ({
         selectProfile: setCurrentProfileId,
         currentProfile,
         loading,
+        stats,
       }}
     >
       <ControlledFilters

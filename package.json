@@ -41,6 +41,7 @@
     "valibot": "^0.27.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.5.3",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^20.11.6",
     "@types/react": "^18.2.48",

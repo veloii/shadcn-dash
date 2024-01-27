@@ -1,13 +1,12 @@
-import React, { ChangeEventHandler, useCallback } from "react"
 import {
+  Profile,
   chartTypeIcons,
   chartTypes,
-  Profile,
   useProfiles,
 } from "@/contexts/profile"
 import { TrashIcon } from "lucide-react"
+import React, { useCallback } from "react"
 
-import { cn, Color, colorClass } from "@/lib/utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +20,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { ColorPickerSelect } from "@/components/ui/color-picker"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Color, cn, colorClass } from "@/lib/utils"
 
 function ProfileForm({
   onChange,
@@ -32,32 +31,22 @@ function ProfileForm({
   profile?: Partial<Profile>
   onChange: (profile: Partial<Profile>) => void
 }) {
-  const onNameChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (event) => {
-      if (!("value" in event.target) || typeof event.target.value !== "string")
-        return
-
-      onChange({ name: event.target.value })
-    },
-    []
-  )
-
   const onColorChange = useCallback((color: Color) => {
     onChange({ color })
-  }, [])
+  }, [onChange])
 
   return (
     <div className="grid gap-2">
-      <div className="grid grid-cols-3 items-center gap-4">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          ignorePasswordManager
-          id="name"
-          placeholder={profile?.name}
-          onChange={onNameChange}
-          className="col-span-2 h-8"
-        />
-      </div>
+      {/* <div className="grid grid-cols-3 items-center gap-4"> */}
+      {/*   <Label htmlFor="name">Name</Label> */}
+      {/*   <Input */}
+      {/*     ignorePasswordManager */}
+      {/*     id="name" */}
+      {/*     placeholder={profile?.name} */}
+      {/*     onChange={onNameChange} */}
+      {/*     className="col-span-2 h-8" */}
+      {/*   /> */}
+      {/* </div> */}
       <div className="grid grid-cols-3 items-center gap-4">
         <Label>Color</Label>
         <Select onValueChange={onColorChange} defaultValue={profile?.color}>
@@ -80,7 +69,7 @@ function ProfileForm({
                 className={cn(
                   "h-8 transition",
                   active &&
-                    `bg-muted ${profile?.color && colorClass[profile.color]} dark:border-transparent`
+                  `bg-muted ${profile?.color && colorClass[profile.color]} dark:border-transparent`
                 )}
                 variant={"outline"}
                 key={chartType}
@@ -93,24 +82,6 @@ function ProfileForm({
         </div>
       </div>
     </div>
-  )
-}
-
-function RemoveProfileAlertContent({ onConfirm }: { onConfirm: () => void }) {
-  return (
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-        <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete the
-          profile.
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
   )
 }
 
@@ -137,37 +108,21 @@ export function ProfileSettings({ profile }: { profile: Profile }) {
         </p>
       </div>
       <ProfileForm profile={profile} onChange={onChange} />
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" className="pr-5">
-            <TrashIcon className="h-4 mr-1" />
-            Remove
-          </Button>
-        </AlertDialogTrigger>
-        <RemoveProfileAlertContent onConfirm={onRemove} />
-      </AlertDialog>
+      <Button variant="destructive" size="sm" className="pr-5" onClick={onRemove}>
+        <TrashIcon className="h-4 mr-1" />
+        Remove
+      </Button>
     </div>
   )
 }
 
 export function NewProfile({
   onAddProfile,
+  stats,
 }: {
-  onAddProfile: (_: Profile) => void
+  onAddProfile: (name: string) => void
+  stats: string[]
 }) {
-  const [profile, setProfile] = React.useState<Partial<Profile>>({})
-
-  const onChange = React.useCallback(
-    (p: Partial<Profile>) => {
-      setProfile((profile) => ({ ...profile, ...p }))
-    },
-    [setProfile]
-  )
-
-  const isProfileValid = React.useMemo(() => {
-    return (profile.name?.length || 0) > 0 && profile.color && profile.chartType
-  }, [profile])
-
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -176,17 +131,13 @@ export function NewProfile({
           Fill in the details to create a new profile.
         </p>
       </div>
-      <ProfileForm profile={profile} onChange={onChange} />
-      <Button
-        size="sm"
-        onClick={() => {
-          onAddProfile(profile as Profile)
-          setProfile({})
-        }}
-        disabled={!isProfileValid}
-      >
-        Create
-      </Button>
+      {stats.map(stat => (
+        <Button key={stat} onClick={() => {
+          onAddProfile(stat)
+        }}>
+          {stat}
+        </Button>
+      ))}
     </div>
   )
 }
