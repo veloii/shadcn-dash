@@ -1,7 +1,6 @@
 import { Button, ButtonProps } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { TabsPosition } from '.'
-import { useViewStore } from '@/stores/view'
+import { TabsPosition, useViewStore } from '@/stores/view'
 import { useCallback, useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
