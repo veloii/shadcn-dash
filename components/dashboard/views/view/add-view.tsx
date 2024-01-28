@@ -1,13 +1,13 @@
 import { Button, ButtonProps } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { TabsPosition, useViewStore } from '@/stores/view'
+import { TabsPosition, useViewStore } from '@/components/dashboard/views/store'
 import { useCallback, useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { PlusIcon } from 'lucide-react'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
 
-export function NewView({
+export function AddView({
   onSelect,
   stats,
 }: {
@@ -88,7 +88,7 @@ export function AddViewButton({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0">
-        <NewView onSelect={onNew} stats={demoStats} />
+        <AddView onSelect={onNew} stats={demoStats} />
       </PopoverContent>
     </Popover>
   )

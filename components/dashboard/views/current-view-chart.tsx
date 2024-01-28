@@ -1,12 +1,15 @@
-import { View, useCurrentView } from '@/stores/view'
+import { View, useCurrentView } from '@/components/dashboard/views/store'
 import { AreaChart } from "../../ui/charts/area-chart"
 import { BarChart } from "../../ui/charts/bar-chart"
+import { LineChart } from "../../ui/charts/line-chart"
 import { subDays } from 'date-fns'
+import { GeoMap } from '@/components/ui/charts/geo-map'
 
 const charts = {
   area: AreaChart,
-  line: AreaChart,
+  line: LineChart,
   bar: BarChart,
+  geo: GeoMap
 } as const
 
 function ViewChart({ view }: { view: View }) {
@@ -23,7 +26,7 @@ function ViewChart({ view }: { view: View }) {
     })
   }
 
-  return <Comp data={data} x="date" y="value" color={view.color} />
+  return <Comp height={450} data={data} x="date" y="value" color={view.color} />
 }
 
 export function CurrentViewChart() {
@@ -32,5 +35,9 @@ export function CurrentViewChart() {
   // some empty state
   if (!view) return null;
 
-  return <ViewChart view={view} />
+  return (
+    <div className="grow min-h-[432px] overflow-hidden">
+      <ViewChart view={view} />
+    </div>
+  )
 }

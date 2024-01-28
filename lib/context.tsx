@@ -39,13 +39,18 @@ export function createStoreContext<TState, TCreateStoreArgs extends {}>(createSt
    * Custom hook that provides access to the Zustand store within components.
    * It uses `useContext` to access the store from `RowStoreContext` and returns the hook returned by the Zustand store.
    */
-  const useStore = <U,>(selector: (selector: TState) => U) => {
+
+  type UseStore<U = never,> = U extends never ? TState : U
+  function useStore<U = never,>(selector?: (selector: TState) => U) {
     const useStore = useContext(StoreContext);
     if (useStore === null) {
       throw new Error('useStore must be used within a StoreProvider.');
     }
-    return useStore(selector);
+    if (selector === undefined) return useStore() as UseStore<U>;
+    return useStore(selector) as UseStore<U>;
   };
 
   return [StoreProvider, useStore] as const;
 }
+
+

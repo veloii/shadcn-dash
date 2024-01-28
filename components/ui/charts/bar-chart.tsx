@@ -14,8 +14,8 @@ import { CustomTooltip } from "./tooltip"
 import { ChartProps } from '.'
 
 const colorClass: Record<Color, string> = {
-  primary: "fill-primary/75",
-  red: "fill-red-400/75",
+  primary: "fill-primary",
+  red: "fill-red-400",
   orange: "fill-orange-400/75",
   amber: "fill-amber-400/75",
   yellow: "fill-yellow-400/75",
@@ -34,9 +34,9 @@ const colorClass: Record<Color, string> = {
   rose: "fill-rose-400/75",
 }
 
-export function BarChart<T>({ data, color, x, y }: ChartProps<T>) {
+export function BarChart<T>({ height, data, color, x, y }: ChartProps<T>) {
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={height}>
       <RechartsBarChart data={data}>
         <XAxis
           dataKey={x as string}
@@ -48,7 +48,6 @@ export function BarChart<T>({ data, color, x, y }: ChartProps<T>) {
             if (i % 2 === 0) return format(date, "MMM d")
             return ""
           }}
-          tickMargin={10}
           className="text-xs"
         />
 
@@ -59,6 +58,7 @@ export function BarChart<T>({ data, color, x, y }: ChartProps<T>) {
           tickCount={7}
           tickMargin={10}
           className="text-xs"
+          padding={{ top: 20, bottom: 10 }}
           tickFormatter={(number) => `$${number.toFixed(2)}`}
         />
 

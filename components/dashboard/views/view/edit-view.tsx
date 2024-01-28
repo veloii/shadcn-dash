@@ -6,7 +6,7 @@ import { ColorPickerSelect } from "@/components/ui/color-picker"
 import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Color, cn, colorClass } from "@/lib/utils"
-import { View, useViewStore, viewTypeIcons, viewTypes } from '@/stores/view'
+import { View, useViewStore, viewTypeIcons, viewTypes } from '@/components/dashboard/views/store'
 
 function EditViewForm({
   onChange,
@@ -32,7 +32,7 @@ function EditViewForm({
       </div>
       <div className="grid grid-cols-3 items-center gap-4">
         <Label>Graph</Label>
-        <div className="grid-cols-3 grid col-span-2 gap-1">
+        <div className="grid-cols-4 grid col-span-2 gap-1">
           {viewTypes.map((type) => {
             const Icon = viewTypeIcons[type]
             const active = type === view?.type
@@ -43,7 +43,7 @@ function EditViewForm({
                 className={cn(
                   "h-8 transition",
                   active &&
-                  `bg-muted ${view?.color && colorClass[view.color]} dark:border-transparent`
+                  `bg-muted hover:bg-[] ${view?.color && colorClass[view.color]} dark:border-transparent`
                 )}
                 variant={"outline"}
                 key={type}
@@ -59,7 +59,7 @@ function EditViewForm({
   )
 }
 
-export function ViewSettings({ view }: { view: View }) {
+export function EditView({ view }: { view: View }) {
   const remove = useViewStore(s => s.remove)
   const edit = useViewStore(s => s.edit)
 

@@ -1,11 +1,11 @@
 import { createStoreContext } from '@/lib/context'
 import { Color, colors } from '@/lib/utils'
-import { AreaChartIcon, BarChart, LineChartIcon, LucideIcon } from 'lucide-react'
+import { AreaChartIcon, BarChart, LineChartIcon, LucideIcon, Navigation } from 'lucide-react'
 import React from 'react'
 import { create } from 'zustand'
 import { persist, combine, createJSONStorage } from 'zustand/middleware'
 
-export const viewTypes = ['area', 'bar', 'line'] as const
+export const viewTypes = ['area', 'bar', 'line', "geo"] as const
 
 export type ViewType = typeof viewTypes[number]
 export type Id = number
@@ -13,6 +13,7 @@ export type Filters = Record<string, string[]>
 
 export const viewTypeIcons: Record<ViewType, LucideIcon> = {
   line: LineChartIcon,
+  geo: Navigation,
   area: AreaChartIcon,
   bar: BarChart,
 }
@@ -32,16 +33,36 @@ const randomColor = () => colors[Math.floor(Math.random() * colors.length)]
 
 export const createViewStore = ({ syncKey }: { syncKey: string }) => create(
   persist(
-    combine({ tabsPosition: "side" as TabsPosition, views: [] as View[], selectedId: null as null | Id }, (set, get) => ({
+    combine({ syncKey, tabsPosition: "side" as TabsPosition, views: [] as View[], selectedId: null as null | Id }, (set, get) => ({
       remove: Object.assign((id: number) => set((state) => ({ views: state.views.filter((v) => v.id !== id) })), {
-        filter: (id: number, key: string, value?: string) => set((state) => {
-          if (!value) return { views: state.views.map((v) => (v.id === id ? { ...v, filters: { ...v.filters, [key]: [] } } : v)) }
+        filter: (id: number, key: string, value?: string) => {
+          set((state) => {
+            const index = state.views.findIndex((v) => v.id === id)
+            const view = state.views[index]
 
-          return {
-            views: state.views.map((v) => (v.id === id ? { ...v, filters: { ...v.filters, [key]: (v.filters[key] || []).filter((v) => v !== value) } } : v))
-          }
-        })
+            if (key in view.filters && view.filters[key]?.length === 1) {
+              const { [key]: _, ...rest } = view.filters
+              view.filters = rest
+            } else {
+              view.filters = {
+                ...view.filters,
+                [key]: view.filters[key]?.filter((v) => v !== value),
+              }
+            }
+
+            const views = [...state.views]
+            views[index] = view
+
+            return {
+              views
+            }
+          })
+        }
       }),
+
+      importView: (view: View) => set((state) => ({
+        views: [...state.views, view]
+      })),
 
       add: Object.assign((stat: string) => {
         const existingView = (get().views.find(v => v.stat === stat))
@@ -64,7 +85,7 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) => create(
         views: state.views.map((v) => (v.id === id ? { ...v, ...view } : v))
       })),
 
-      select: (id: number) => set({ selectedId: id }),
+      select: (id: number | null) => set({ selectedId: id }),
 
       setTabsPosition: (tabsPosition: TabsPosition) => set({ tabsPosition }),
     })),
@@ -73,6 +94,8 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) => create(
 )
 
 export const [ViewStoreProvider, useViewStore] = createStoreContext(createViewStore)
+
+export type ViewStore = ReturnType<ReturnType<typeof createViewStore>['getInitialState']>
 
 export const useCurrentView = () => {
   const selectedId = useViewStore((state) => state.selectedId)

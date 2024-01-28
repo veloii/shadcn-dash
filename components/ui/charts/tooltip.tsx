@@ -5,8 +5,9 @@ export function CustomTooltip({
   active,
   payload,
   label,
-}: TooltipProps<string, string>) {
-  const date = label ? formatRelative(parseISO(label), new Date()) : ""
+  formatAsDate = true
+}: TooltipProps<string, string> & { formatAsDate?: boolean }) {
+  const date = (label && formatAsDate) ? formatRelative(parseISO(label), new Date()) : label
 
   if (active && payload && payload.length > 0) {
     const { value } = payload[0]

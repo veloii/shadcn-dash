@@ -2,7 +2,8 @@ import { Color } from '@/lib/utils'
 
 export type ChartProps<T> = {
   color: Color
-  data: T[],
+  data: T[]
   x: keyof T
   y: keyof T
+  height?: number
 }

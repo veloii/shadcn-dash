@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { FilterIcon, SettingsIcon } from 'lucide-react'
 import React from 'react'
-import { ViewSettings } from './edit'
+import { EditView } from './edit-view'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { View, useViewStore, useWithId } from '@/stores/view'
+import { View, useViewStore, useWithId } from '@/components/dashboard/views/store'
 import { FilterList, FiltersToggle } from '@/components/ui/filters-list'
+import { useDndControl } from '../drag-n-drop'
 
 const demoAvailableFilters = {
   author: ["@pomber", "@jamesplease"],
@@ -18,6 +19,7 @@ const demoAvailableFilters = {
 export function ViewActions({ view }: { view: View }) {
   const [addFilterOpen, setAddFilterOpen] = React.useState(false)
   const [settingsOpen, setSettingsOpen] = React.useState(false)
+  const { setDisabled } = useDndControl()
 
   const hasFilters = Object.keys(view.filters).length > 0
 
@@ -28,7 +30,10 @@ export function ViewActions({ view }: { view: View }) {
 
   return (
     <>
-      <Popover open={addFilterOpen} onOpenChange={setAddFilterOpen}>
+      <Popover open={addFilterOpen} onOpenChange={(v) => {
+        setAddFilterOpen(v)
+        setDisabled(v)
+      }}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -66,7 +71,10 @@ export function ViewActions({ view }: { view: View }) {
         </PopoverContent>
       </Popover>
 
-      <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+      <Popover open={settingsOpen} onOpenChange={(v) => {
+        setSettingsOpen(v);
+        setDisabled(v)
+      }}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -78,7 +86,7 @@ export function ViewActions({ view }: { view: View }) {
         </PopoverTrigger>
 
         <PopoverContent className="w-80">
-          <ViewSettings view={view} />
+          <EditView view={view} />
         </PopoverContent>
       </Popover>
     </>
