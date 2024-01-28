@@ -60,9 +60,24 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) => create(
         }
       }),
 
-      importView: (view: View) => set((state) => ({
-        views: [...state.views, view]
-      })),
+      importView: (view: View, index?: number | undefined) => set((state) => {
+        const views = [...state.views]
+        if (index === undefined) views.push(view)
+        else {
+          views.splice(index, 0, view)
+        }
+        return { views }
+      }),
+
+      move: (id: number, index: number) => set((state) => {
+        const views = [...state.views]
+        const view = views.find((v) => v.id === id)
+        if (!view) return state
+        const oldIndex = views.indexOf(view)
+        views.splice(oldIndex, 1)
+        views.splice(index, 0, view)
+        return { views }
+      }),
 
       add: Object.assign((stat: string) => {
         const existingView = (get().views.find(v => v.stat === stat))

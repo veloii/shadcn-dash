@@ -46,7 +46,7 @@ export function ViewItem({
   return (
     <div
       className={cn(
-        "backdrop-blur-sm animate-out fade-out relative flex h-9 whitespace-nowrap min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
+        "relative flex h-9 whitespace-nowrap min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
         active
           ? `bg-muted text-foreground ${colorClass[view.color]}`
           : "opacity-75 hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
@@ -89,7 +89,7 @@ export function DraggableViewsItems() {
       <ViewItem.Skeleton key={i} />
     ))
     :
-    views.map((view) => (
+    views.map(view => (
       <Draggable
         key={view.id}
         view={view}

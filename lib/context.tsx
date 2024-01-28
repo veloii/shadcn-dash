@@ -40,8 +40,8 @@ export function createStoreContext<TState, TCreateStoreArgs extends {}>(createSt
    * It uses `useContext` to access the store from `RowStoreContext` and returns the hook returned by the Zustand store.
    */
 
-  type UseStore<U = never,> = U extends never ? TState : U
-  function useStore<U = never,>(selector?: (selector: TState) => U) {
+  type UseStore<U> = [U] extends [never] ? TState : U
+  function useStore<U = never>(selector?: (selector: TState) => U) {
     const useStore = useContext(StoreContext);
     if (useStore === null) {
       throw new Error('useStore must be used within a StoreProvider.');

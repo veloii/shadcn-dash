@@ -11,7 +11,7 @@ export function DndViews({ syncKey }: { syncKey: string }) {
     <ViewStoreProvider syncKey={syncKey}>
       <ViewsContainer>
         <ViewsToolbar asChild>
-          <DropContainer id={syncKey} >
+          <DropContainer id={syncKey}>
             <DraggableViewsItems />
           </DropContainer>
         </ViewsToolbar>
