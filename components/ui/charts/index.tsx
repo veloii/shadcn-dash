@@ -1,9 +1,9 @@
-import { Color } from '@/lib/utils'
+import { Color } from "@/lib/utils";
 
 export type ChartProps<T> = {
-  color: Color
-  data: T[]
-  x: keyof T
-  y: keyof T
-  height?: number
-}
+	color: Color;
+	data: T[];
+	x: keyof T;
+	y: keyof T;
+	height?: number;
+};
