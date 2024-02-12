@@ -2,19 +2,17 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FilterIcon, SettingsIcon } from "lucide-react";
 import React from "react";
-import { EditView } from "./edit-view";
+import { EditView } from "./view-editor";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-	View,
-	useViewStore,
-	useWithId,
-} from "@/components/dashboard/views/store";
 import { FilterList, FiltersToggle } from "@/components/ui/filters-list";
-import { useDndControl } from "../drag-n-drop";
+import { useDndControl } from "./view-group-dnd";
+import { View } from "@/stores/view";
+import { wrap } from "@/stores/root";
+import { useViewGroup } from "@/stores/view-group";
 
 const demoAvailableFilters = {
 	author: ["@pomber", "@jamesplease"],
@@ -31,10 +29,10 @@ export function ViewActions({ view }: { view: View }) {
 
 	const hasFilters = Object.keys(view.filters).length > 0;
 
-	const withId = useWithId(view.id);
+	const withId = wrap(view.id);
 
-	const addFilter = withId(useViewStore((s) => s.add.filter));
-	const removeFilter = withId(useViewStore((s) => s.remove.filter));
+	const addFilter = withId(useViewGroup((s) => s.addViewFilter));
+	const removeFilter = withId(useViewGroup((s) => s.deleteViewFilter));
 
 	return (
 		<>

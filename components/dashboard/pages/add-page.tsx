@@ -8,7 +8,8 @@ import {
 import { cn, randomId } from "@/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { EditPageFields, EditPageFormErrors } from "./edit-page";
-import { Page, usePageStore } from "./store";
+import { useRootStore } from "@/stores/root";
+import { Page } from "@/stores/page";
 
 export function AddPageButton({
 	className,
@@ -16,8 +17,8 @@ export function AddPageButton({
 	unstyled = false,
 	...props
 }: ButtonProps & { unstyled?: boolean }) {
-	const add = usePageStore((s) => s.addPage);
-	const select = usePageStore((s) => s.setCurrentPage);
+	const add = useRootStore((s) => s.addPage);
+	const select = useRootStore((s) => s.setCurrentPage);
 	const [page, setPage] = useState<Partial<Page>>({});
 	const [errors, setErrors] = useState<EditPageFormErrors>({});
 	const [open, setOpen] = useState(false);
@@ -40,7 +41,7 @@ export function AddPageButton({
 
 			const populatedPage = page as Page;
 			populatedPage.id = randomId();
-			populatedPage.splitStoreKeys = [];
+			populatedPage.splits = [];
 
 			add(populatedPage);
 			select(populatedPage.id);

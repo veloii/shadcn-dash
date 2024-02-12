@@ -1,9 +1,4 @@
 import {
-	View,
-	ViewStore,
-	useViewStore,
-} from "@/components/dashboard/views/store";
-import {
 	DndContext,
 	DragEndEvent,
 	DragOverEvent,
@@ -18,7 +13,7 @@ import {
 	useSensors,
 } from "@dnd-kit/core";
 import { useState } from "react";
-import { ViewItem } from "./view/view-item";
+import { ViewItem } from "./view-item";
 import React from "react";
 import { Color, cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
@@ -27,6 +22,9 @@ import {
 	rectSwappingStrategy,
 	useSortable,
 } from "@dnd-kit/sortable";
+import { useViewGroup } from "@/stores/view-group";
+import { View } from "@/stores/view";
+import { useSplit } from "@/stores/split";
 
 const DndControlContext = React.createContext({
 	disabled: false,
@@ -47,12 +45,12 @@ const withDndControl = <C,>(Component: React.FC<C>) => {
 
 export const useDndControl = () => React.useContext(DndControlContext);
 
-export const Draggable = withDndControl(function Draggable({
+export const ViewItemContainer = withDndControl(function Draggable({
 	view,
 	children,
 }: { view: View; children: React.ReactNode }) {
-	const isSelected = useViewStore((s) => s.selectedId === view.id);
-	const store = useViewStore();
+	const splitId = useSplit((s) => s.split?.id);
+	const viewGroupId = useViewGroup((s) => s.id);
 	const { disabled } = useDndControl();
 
 	const { isOver, active, attributes, listeners, transform, setNodeRef } =
@@ -60,10 +58,9 @@ export const Draggable = withDndControl(function Draggable({
 			id: view.id,
 			disabled,
 			data: {
-				view,
-				isSelected,
-				key: store.syncKey,
-				getStore: () => store,
+				splitId,
+				viewGroupId,
+				type: "view",
 			},
 		});
 
@@ -111,20 +108,16 @@ const dndColors: Record<Color, string> = {
 	primary: "bg-primary/20 border-primary",
 };
 
-export function DropContainer({
+export function ViewGroupContainer({
 	asChild,
-	id,
 	children,
 	className,
 	...props
-}: { id: string; asChild?: boolean } & React.ComponentPropsWithoutRef<"div">) {
-	const store = useViewStore();
+}: { asChild?: boolean } & React.ComponentPropsWithoutRef<"div">) {
+	const { views, id } = useViewGroup();
 
 	const { active, isOver, setNodeRef } = useDroppable({
 		id,
-		data: {
-			getStore: () => store,
-		},
 	});
 
 	const color = active?.data.current?.view.color;
@@ -133,7 +126,7 @@ export function DropContainer({
 
 	return (
 		<div className="h-full flex w-full">
-			<SortableContext items={store.views} strategy={rectSwappingStrategy}>
+			<SortableContext items={views} strategy={rectSwappingStrategy}>
 				<Comp
 					className={cn(
 						isOver && color && dndColors[color as Color],
@@ -151,7 +144,7 @@ export function DropContainer({
 	);
 }
 
-export function DndContainer({ children }: { children: React.ReactNode }) {
+export function PageContainer({ children }: { children: React.ReactNode }) {
 	const [activeView, setActiveView] = useState<View | null>(null);
 	const [isSelected, setIsSelected] = useState(false);
 
@@ -168,60 +161,60 @@ export function DndContainer({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	const handleDragEnd = React.useCallback((event: DragEndEvent) => {
-		const fromStore: ViewStore = event.active?.data.current?.getStore();
-		const toStore: ViewStore = event.over?.data.current?.getStore();
-
-		if (!fromStore || !toStore) return;
-
-		const movedView = event.active.data.current?.view;
-		if (!movedView) return;
-
-		const viewToReplace = event.over?.data.current?.view;
-		const newIndex = viewToReplace
-			? toStore.views.findIndex((v) => v.id === viewToReplace.id)
-			: undefined;
-
-		if (fromStore === toStore) {
-			// we perform a move
-			const sameStore = fromStore;
-
-			if (!viewToReplace) {
-				// we perform a move to the end
-				sameStore.move(movedView.id, sameStore.views.length - 1);
-				return;
-			}
-
-			// this should never evaluate to 0
-			sameStore.move(movedView.id, newIndex ?? 0);
-			return;
-		}
-
-		const movedViewIndex = fromStore.views.findIndex(
-			(v) => v.id === movedView.id,
-		);
-
-		// we perform a copy and delete
-		toStore.importView(movedView, newIndex);
-		toStore.select(movedView.id);
-		fromStore.remove(movedView.id);
-
-		// we try and calculate the new index for the fromStore
-		const fromStoreNewView =
-			fromStore.views[movedViewIndex + 1] ||
-			fromStore.views[movedViewIndex - 1];
-		if (fromStoreNewView) fromStore.select(fromStoreNewView.id);
-
-		setActiveView(null);
+		// const fromStore: ViewStore = event.active?.data.current?.getStore();
+		// const toStore: ViewStore = event.over?.data.current?.getStore();
+		//
+		// if (!fromStore || !toStore) return;
+		//
+		// const movedView = event.active.data.current?.view;
+		// if (!movedView) return;
+		//
+		// const viewToReplace = event.over?.data.current?.view;
+		// const newIndex = viewToReplace
+		// 	? toStore.views.findIndex((v) => v.id === viewToReplace.id)
+		// 	: undefined;
+		//
+		// if (fromStore === toStore) {
+		// 	// we perform a move
+		// 	const sameStore = fromStore;
+		//
+		// 	if (!viewToReplace) {
+		// 		// we perform a move to the end
+		// 		sameStore.move(movedView.id, sameStore.views.length - 1);
+		// 		return;
+		// 	}
+		//
+		// 	// this should never evaluate to 0
+		// 	sameStore.move(movedView.id, newIndex ?? 0);
+		// 	return;
+		// }
+		//
+		// const movedViewIndex = fromStore.views.findIndex(
+		// 	(v) => v.id === movedView.id,
+		// );
+		//
+		// // we perform a copy and delete
+		// toStore.importView(movedView, newIndex);
+		// toStore.select(movedView.id);
+		// fromStore.remove(movedView.id);
+		//
+		// // we try and calculate the new index for the fromStore
+		// const fromStoreNewView =
+		// 	fromStore.views[movedViewIndex + 1] ||
+		// 	fromStore.views[movedViewIndex - 1];
+		// if (fromStoreNewView) fromStore.select(fromStoreNewView.id);
+		//
+		// setActiveView(null);
 	}, []);
 
 	const handleDragOver = React.useCallback((event: DragOverEvent) => {
-		const store: ViewStore = event.active?.data.current?.getStore();
-		const key = event.over?.id;
-
-		if (event.over?.data.current?.view) return;
-		if (!store || !key) return setIsSelected(false);
-
-		setIsSelected(store.syncKey !== key);
+		// const store: ViewStore = event.active?.data.current?.getStore();
+		// const key = event.over?.id;
+		//
+		// if (event.over?.data.current?.view) return;
+		// if (!store || !key) return setIsSelected(false);
+		//
+		// setIsSelected(store.syncKey !== key);
 	}, []);
 
 	const mouseSensor = useSensor(MouseSensor, {

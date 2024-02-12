@@ -6,12 +6,8 @@ import { ColorPickerSelect } from "@/components/ui/color-picker";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Color, cn, colorClass } from "@/lib/utils";
-import {
-	View,
-	useViewStore,
-	viewTypeIcons,
-	viewTypes,
-} from "@/components/dashboard/views/store";
+import { View, viewTypeIcons, viewTypes } from "@/stores/view";
+import { useViewGroup } from "@/stores/view-group";
 
 function EditViewForm({
 	onChange,
@@ -70,8 +66,8 @@ function EditViewForm({
 }
 
 export function EditView({ view }: { view: View }) {
-	const remove = useViewStore((s) => s.remove);
-	const edit = useViewStore((s) => s.edit);
+	const deleteView = useViewGroup((s) => s.deleteView);
+	const edit = useViewGroup((s) => s.editView);
 
 	const onChange = React.useCallback(
 		(p: Partial<View>) => {
@@ -81,8 +77,8 @@ export function EditView({ view }: { view: View }) {
 	);
 
 	const onRemove = React.useCallback(() => {
-		remove(view.id);
-	}, [view.id, remove]);
+		deleteView(view.id);
+	}, [view.id, deleteView]);
 
 	return (
 		<div className="space-y-4">

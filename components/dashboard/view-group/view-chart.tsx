@@ -1,9 +1,11 @@
-import { View, useCurrentView } from "@/components/dashboard/views/store";
 import { AreaChart } from "../../ui/charts/area-chart";
 import { BarChart } from "../../ui/charts/bar-chart";
 import { LineChart } from "../../ui/charts/line-chart";
 import { subDays } from "date-fns";
 import { GeoMap } from "@/components/ui/charts/geo-map";
+import { View } from "@/stores/view";
+import { useViewGroup } from "@/stores/view-group";
+import { memo } from "react";
 
 const charts = {
 	area: AreaChart,
@@ -12,7 +14,7 @@ const charts = {
 	geo: GeoMap,
 } as const;
 
-function ViewChart({ view }: { view: View }) {
+function Charts({ view }: { view: View }) {
 	const Comp = charts[view.type];
 
 	const data: {
@@ -31,15 +33,17 @@ function ViewChart({ view }: { view: View }) {
 	);
 }
 
-export function CurrentViewChart() {
-	const view = useCurrentView();
+export const CurrentViewChart = memo(function CurrentViewChart() {
+	const view = useViewGroup((s) =>
+		s.views.find((v) => v.id === s.selectedViewId),
+	);
+	console.log(view);
 
-	// some empty state
 	if (!view) return null;
 
 	return (
 		<div className="min-h-[432px] overflow-hidden">
-			<ViewChart view={view} />
+			<Charts view={view} />
 		</div>
 	);
-}
+});

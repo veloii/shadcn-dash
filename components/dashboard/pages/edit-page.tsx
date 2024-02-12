@@ -3,10 +3,10 @@ import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { View } from "@/components/dashboard/views/store";
-import { Page, usePageStore } from "./store";
 import { Input } from "@/components/ui/input";
 import { EmojiPickerSelection } from "@/components/ui/emoji-picker";
+import { Page } from "@/stores/page";
+import { useRootStore } from "@/stores/root";
 
 export type EditPageFormErrors = {
 	name?: string;
@@ -57,11 +57,11 @@ export function EditPage({
 	page,
 	onDelete,
 }: { onDelete?: () => void; page: Page }) {
-	const deletePage = usePageStore((s) => s.deletePage);
-	const edit = usePageStore((s) => s.edit);
+	const deletePage = useRootStore((s) => s.deletePage);
+	const edit = useRootStore((s) => s.editPage);
 
 	const onChange = React.useCallback(
-		(p: Partial<View>) => {
+		(p: Partial<Page>) => {
 			edit(page.id, p);
 		},
 		[page.id, edit],

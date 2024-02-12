@@ -2,9 +2,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { ComponentPropsWithoutRef } from "react";
-import { AddViewButton } from "./view/add-view";
+import { AddViewButton } from "./add-view";
 
-export function ViewsToolbar({
+export function ViewGroupToolbar({
 	className,
 	asChild,
 	children,

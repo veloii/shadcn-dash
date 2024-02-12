@@ -1,9 +1,7 @@
 import logo from "@/assets/vosa.png";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ReactNode } from "react";
 import { ThemeToggle } from "../theme-toggle";
-import { usePageStore } from "./pages/store";
 import { PageItems } from "./pages/page-item";
 import { AddPageButton } from "./pages/add-page";
 import { ScrollArea } from "../ui/scroll-area";

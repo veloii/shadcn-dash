@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
-import { Page, usePageStore } from "./pages/store";
 import { EmojiPickerSelection } from "../ui/emoji-picker";
+import { Page } from "@/stores/page";
+import { useRootStore } from "@/stores/root";
 
 export function PageShell({
 	children,
@@ -12,7 +13,7 @@ export function PageShell({
 	children: React.ReactNode;
 	page: Page;
 } & React.ComponentPropsWithoutRef<"div">) {
-	const edit = usePageStore((s) => s.edit);
+	const edit = useRootStore((s) => s.editPage);
 
 	return (
 		<div className="space-y-4">

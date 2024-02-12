@@ -7,7 +7,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Page } from "./store";
+import { Page } from "@/stores/page";
 
 export function PageActions({ page }: { page: Page }) {
 	const [settingsOpen, setSettingsOpen] = React.useState(false);

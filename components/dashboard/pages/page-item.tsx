@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Page, usePageStore } from "./store";
 import { PageActions } from "./page-actions";
 import Twemoji from "@/components/ui/twemoji";
+import { Page } from "@/stores/page";
+import { useRootStore } from "@/stores/root";
 
 function PageItemSkeleton({
 	className,
@@ -88,9 +89,9 @@ PageItem.Skeleton = PageItemSkeleton;
 
 export function PageItems() {
 	const loading = false;
-	const pages = usePageStore((s) => s.pages);
-	const selectedId = usePageStore((s) => s.selectedId);
-	const select = usePageStore((s) => s.setCurrentPage);
+	const pages = useRootStore((s) => s.pages);
+	const selectedId = useRootStore((s) => s.selectedId);
+	const select = useRootStore((s) => s.setCurrentPage);
 
 	return loading
 		? Array.from({ length: 6 }).map((_, i) => (

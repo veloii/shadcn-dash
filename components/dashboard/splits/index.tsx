@@ -1,15 +1,15 @@
-import { DndViews } from "../views";
-import { SplitStoreProvider, useSplitStore } from "./store";
+import { SplitProvider } from "@/stores/split";
+import { ViewGroup } from "../view-group";
+import { useCurrentPage } from "@/stores/page";
 
-function EmbedSplitViews() {
-	const viewStoreKeys = useSplitStore((s) => s.viewStoreKeys);
-	return viewStoreKeys.map((key) => <DndViews key={key} syncKey={key} />);
-}
+export default function SplitViews() {
+	const splits = useCurrentPage((s) => s.page.splits);
 
-export default function SplitViews({ syncKey }: { syncKey: string }) {
-	return (
-		<SplitStoreProvider syncKey={syncKey}>
-			<EmbedSplitViews />
-		</SplitStoreProvider>
-	);
+	return splits.map((split) => (
+		<SplitProvider key={split.id} id={split.id}>
+			{split.viewGroups.map((viewGroup) => (
+				<ViewGroup key={viewGroup.id} id={viewGroup.id} />
+			))}
+		</SplitProvider>
+	));
 }

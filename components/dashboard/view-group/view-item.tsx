@@ -1,12 +1,9 @@
 import { cn, colorClass } from "@/lib/utils";
-import {
-	View,
-	useViewStore,
-	viewTypeIcons,
-} from "@/components/dashboard/views/store";
 import { ViewActions } from "./view-actions";
-import React, { useEffect } from "react";
-import { Draggable } from "../drag-n-drop";
+import React from "react";
+import { View, viewTypeIcons } from "@/stores/view";
+import { useViewGroup } from "@/stores/view-group";
+import { ViewItemContainer } from "./view-group-dnd";
 
 function ViewItemSkeleton({
 	className,
@@ -83,9 +80,9 @@ ViewItem.Skeleton = ViewItemSkeleton;
 
 export function DraggableViewsItems() {
 	const loading = false;
-	const select = useViewStore((s) => s.select);
-	const views = useViewStore((s) => s.views);
-	const selectedId = useViewStore((s) => s.selectedId);
+	const select = useViewGroup((s) => s.selectView);
+	const views = useViewGroup((s) => s.views);
+	const selectedId = useViewGroup((s) => s.selectedViewId);
 
 	return loading
 		? Array.from({ length: 6 }).map((_, i) => (
@@ -93,12 +90,12 @@ export function DraggableViewsItems() {
 				<ViewItem.Skeleton key={i} />
 		  ))
 		: views.map((view) => (
-				<Draggable key={view.id} view={view}>
+				<ViewItemContainer key={view.id} view={view}>
 					<ViewItem
 						active={selectedId === view.id}
 						onClick={() => select(view.id)}
 						view={view}
 					/>
-				</Draggable>
+				</ViewItemContainer>
 		  ));
 }

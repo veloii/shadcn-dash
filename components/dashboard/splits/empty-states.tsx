@@ -1,25 +1,6 @@
-import { AddView, demoStats } from "./view/add-view";
-import { useCallback } from "react";
-import { useViewStore } from "./store";
-import { cn, randomId } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useCurrentPage } from "@/stores/page";
 import React from "react";
-import { usePageStore } from "../pages/store";
-import { Split, createSplitStore } from "../splits/store";
-
-export function EmptyViews() {
-	const add = useViewStore((s) => s.add);
-	const select = useViewStore((s) => s.select);
-
-	const onNew = useCallback(
-		(stat: string) => {
-			const { id } = add(stat);
-			select(id);
-		},
-		[select, add],
-	);
-
-	return <AddView onSelect={onNew} stats={demoStats} />;
-}
 
 function WholeSplit({
 	className,
@@ -128,18 +109,7 @@ function ThirdSplit({
 }
 
 export function EmptyBlock() {
-	const addStoreKey = usePageStore((s) => s.addStoreKey);
-	const selectedId = usePageStore((s) => s.selectedId);
-
-	const onSplitChange = React.useCallback(
-		(split: Split) => {
-			if (!selectedId) return;
-			const id = randomId().toString();
-			createSplitStore({ syncKey: id, split });
-			addStoreKey(selectedId, id);
-		},
-		[selectedId, addStoreKey],
-	);
+	const addSplit = useCurrentPage((s) => s.addSplit);
 
 	return (
 		<button
@@ -147,9 +117,9 @@ export function EmptyBlock() {
 			type="button"
 		>
 			<div className="flex gap-4">
-				<WholeSplit onClick={() => onSplitChange?.("whole")} />
-				<HalfSplit onClick={() => onSplitChange?.("half")} />
-				<ThirdSplit onClick={() => onSplitChange?.("third")} />
+				<WholeSplit onClick={() => addSplit("whole")} />
+				<HalfSplit onClick={() => addSplit("half")} />
+				<ThirdSplit onClick={() => addSplit("third")} />
 			</div>
 		</button>
 	);

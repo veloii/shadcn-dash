@@ -1,6 +1,5 @@
 import { Button, ButtonProps } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useViewStore } from "@/components/dashboard/views/store";
 import { useCallback, useState } from "react";
 import {
 	Popover,
@@ -16,6 +15,7 @@ import {
 	CommandInput,
 	CommandItem,
 } from "@/components/ui/command";
+import { useViewGroup } from "@/stores/view-group";
 
 export function AddView({
 	onSelect,
@@ -66,8 +66,8 @@ export function AddViewButton({
 	unstyled = false,
 	...props
 }: ButtonProps & { unstyled?: boolean }) {
-	const add = useViewStore((s) => s.add);
-	const select = useViewStore((s) => s.select);
+	const add = useViewGroup((s) => s.createViewFromStat);
+	const select = useViewGroup((s) => s.selectView);
 
 	const [open, setOpen] = useState(false);
 
