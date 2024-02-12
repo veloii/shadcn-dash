@@ -38,7 +38,7 @@ export function CurrentViewChart() {
 	if (!view) return null;
 
 	return (
-		<div className="grow min-h-[432px] overflow-hidden">
+		<div className="min-h-[432px] overflow-hidden">
 			<ViewChart view={view} />
 		</div>
 	);

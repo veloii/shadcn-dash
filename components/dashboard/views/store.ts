@@ -1,5 +1,5 @@
 import { createStoreContext } from "@/lib/context";
-import { Color, colors } from "@/lib/utils";
+import { Color, randomColor, randomId } from "@/lib/utils";
 import {
 	AreaChartIcon,
 	BarChart,
@@ -32,10 +32,8 @@ export type View = {
 	filters: Filters;
 };
 
-export type TabsPosition = "top" | "side";
-
-const randomId = () => Math.floor(Math.random() * 1000000) satisfies Id;
-const randomColor = () => colors[Math.floor(Math.random() * colors.length)];
+export const makeViewStorageKey = (syncKey: string) => `view-${syncKey}`;
+const storage = typeof window === "undefined" ? ({} as Storage) : localStorage;
 
 export const createViewStore = ({ syncKey }: { syncKey: string }) =>
 	create(
@@ -43,7 +41,6 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) =>
 			combine(
 				{
 					syncKey,
-					tabsPosition: "side" as TabsPosition,
 					views: [] as View[],
 					selectedId: null as null | Id,
 				},
@@ -107,10 +104,10 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) =>
 							if (existingView) return existingView;
 
 							const view: View = {
-								stat,
 								id: randomId(),
-								type: "area",
 								color: randomColor(),
+								stat,
+								type: "area",
 								filters: {},
 							};
 
@@ -146,14 +143,11 @@ export const createViewStore = ({ syncKey }: { syncKey: string }) =>
 						})),
 
 					select: (id: number | null) => set({ selectedId: id }),
-
-					setTabsPosition: (tabsPosition: TabsPosition) =>
-						set({ tabsPosition }),
 				}),
 			),
 			{
-				name: `view-${syncKey}`,
-				storage: createJSONStorage(() => localStorage),
+				name: makeViewStorageKey(syncKey),
+				storage: createJSONStorage(() => storage),
 			},
 		),
 	);
@@ -180,3 +174,7 @@ export const useWithId = (id: Id) =>
 		},
 		[id],
 	);
+
+export const removeViewStore = (syncKey: string) => {
+	storage.removeItem(makeViewStorageKey(syncKey));
+};

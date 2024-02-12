@@ -53,7 +53,7 @@ export function ViewItem({
 				"relative flex h-9 whitespace-nowrap min-w-56 cursor-default select-none gap-1 rounded-lg px-2 text-left transition",
 				active
 					? `bg-muted text-foreground ${colorClass[view.color]}`
-					: "opacity-75 hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
+					: "opacity-75 hover:bg-muted hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
 				className,
 			)}
 			aria-selected={active}

@@ -35,11 +35,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
 						fontSans.variable,
 					)}
 				>
-					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
 						<div className="relative flex min-h-screen flex-col">
-							<div className="flex-1">{children}</div>
+							<div className="flex-1 flex flex-col">{children}</div>
 						</div>
-						<TailwindIndicator />
+						{/* <TailwindIndicator /> */}
 					</ThemeProvider>
 				</body>
 			</html>

@@ -5,29 +5,34 @@ import {
 	Geography,
 	ZoomableGroup,
 } from "react-simple-maps";
-import { ScaleLinear, scaleLinear } from "d3-scale";
+import { scaleLinear } from "d3-scale";
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "../button";
 import { ChartProps } from ".";
 import twColors from "tailwindcss/colors";
 import { Color, cn, colors } from "@/lib/utils";
 import { CustomTooltip } from "./tooltip";
+import { useTheme } from "next-themes";
 
 const geoUrl =
 	"https://raw.githubusercontent.com/veloii/geo-topojson/main/geo.json";
 
-const baseColor = twColors.neutral[800];
+const lightBaseColor = twColors.neutral[100];
+const darkBaseColor = twColors.neutral[800];
 
-const colorScales = colors.reduce(
-	(acc, color) => {
-		acc[color] = [
-			baseColor,
-			color === "primary" ? twColors.white : twColors[color][500],
-		];
-		return acc;
-	},
-	{} as Record<Color, string[]>,
-);
+const colorScales = (theme: string) =>
+	colors.reduce(
+		(acc, color) => {
+			acc[color] = [
+				theme === "dark" ? darkBaseColor : lightBaseColor,
+				color === "primary"
+					? twColors.white
+					: twColors[color][theme === "dark" ? 500 : 400],
+			];
+			return acc;
+		},
+		{} as Record<Color, string[]>,
+	);
 
 const demoData = [
 	{ x: "China", y: 0.1 },
@@ -37,8 +42,8 @@ const demoData = [
 	{ x: "Canada", y: 0.2 },
 ];
 
-const createColorScale = (color: Color) =>
-	scaleLinear<string>().domain([0, 1]).range(colorScales[color]);
+const createColorScale = (color: Color, theme: string) =>
+	scaleLinear<string>().domain([0, 1]).range(colorScales(theme)[color]);
 
 type Tooltip = {
 	label: string;
@@ -52,7 +57,10 @@ export function GeoMap<T>({
 	data: propData,
 	color,
 }: ChartProps<T>) {
-	const [colorScale, setColorScale] = useState(() => createColorScale(color));
+	const { theme } = useTheme();
+	const [colorScale, setColorScale] = useState(() =>
+		createColorScale(color, theme || "light"),
+	);
 	const data = demoData;
 	const x = "x";
 	const y = "y";
@@ -62,8 +70,8 @@ export function GeoMap<T>({
 	const [tooltip, setTooltip] = useState(null as Tooltip);
 
 	useEffect(() => {
-		setColorScale(() => createColorScale(color));
-	}, [color]);
+		setColorScale(() => createColorScale(color, theme || "light"));
+	}, [color, theme]);
 
 	const [position, setPosition] = useState({
 		coordinates: [0, 20] as [number, number],
@@ -167,11 +175,10 @@ export function GeoMap<T>({
 											},
 											hover: {
 												fill: baseColor,
-												filter: "brightness(1.2)",
-											},
-											pressed: {
-												fill: baseColor,
-												filter: "brightness(1.4)",
+												filter:
+													theme === "dark"
+														? "brightness(1.2)"
+														: "brightness(0.95)",
 											},
 										}}
 									/>

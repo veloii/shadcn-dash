@@ -1,6 +1,6 @@
 import { Button, ButtonProps } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TabsPosition, useViewStore } from "@/components/dashboard/views/store";
+import { useViewStore } from "@/components/dashboard/views/store";
 import { useCallback, useState } from "react";
 import {
 	Popover,
@@ -20,14 +20,18 @@ import {
 export function AddView({
 	onSelect,
 	stats,
+	scroll,
 }: {
 	onSelect: (stat: string) => void;
 	stats: Record<string, string[]>;
+	scroll?: boolean;
 }) {
+	const Scroll = scroll ? ScrollArea : "div";
+
 	return (
 		<Command>
 			<CommandInput placeholder="Search events to track..." />
-			<ScrollArea className="h-64">
+			<Scroll className={scroll ? "h-64" : ""}>
 				<CommandEmpty>No stats found.</CommandEmpty>
 				{Object.entries(stats).map(([group, stats]) => (
 					<CommandGroup className="p-3">
@@ -46,23 +50,22 @@ export function AddView({
 						))}
 					</CommandGroup>
 				))}
-			</ScrollArea>
+			</Scroll>
 		</Command>
 	);
 }
 
-const demoStats = {
+export const demoStats = {
 	users: ["Visitors", "Page Views"],
 	events: ["Purchases", "Signups", "Logins", "Comments", "Likes"],
 };
 
 export function AddViewButton({
 	className,
-	tabsPosition,
+	children,
+	unstyled = false,
 	...props
-}: Omit<ButtonProps, "type"> & {
-	tabsPosition: TabsPosition;
-}) {
+}: ButtonProps & { unstyled?: boolean }) {
 	const add = useViewStore((s) => s.add);
 	const select = useViewStore((s) => s.select);
 
@@ -81,15 +84,19 @@ export function AddViewButton({
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<Button
-					className={cn("size-9 p-2.5 transition active:scale-95", className)}
-					variant="ghost"
+					className={cn(
+						!unstyled && "size-9 p-2.5 transition active:scale-95",
+						className,
+					)}
+					variant={unstyled ? "default" : "ghost"}
 					{...props}
 				>
-					<PlusIcon className="h-full" />
+					{!unstyled && <PlusIcon className="h-full" />}
+					{children}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-80 p-0">
-				<AddView onSelect={onNew} stats={demoStats} />
+				<AddView onSelect={onNew} stats={demoStats} scroll />
 			</PopoverContent>
 		</Popover>
 	);

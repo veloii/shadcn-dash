@@ -1,6 +1,6 @@
 import {
 	JetBrains_Mono as FontMono,
-	Inter as FontSans,
+	Manrope as FontSans,
 } from "next/font/google";
 
 export const fontSans = FontSans({
