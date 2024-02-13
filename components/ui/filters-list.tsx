@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Filters } from "@/components/dashboard/views/store";
+import type { Filters } from "@/stores/view";
 
 export function FiltersToggle({
 	availableFilters,

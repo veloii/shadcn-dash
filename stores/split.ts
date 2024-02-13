@@ -25,6 +25,8 @@ export const [SplitProvider, useSplit] = createScopedStore(
 		deleteViewGroup,
 		selectView,
 		createViewFromStat,
+		getView,
+		moveView,
 		page,
 	}) =>
 		({ id }: { id: number }) => {
@@ -37,12 +39,14 @@ export const [SplitProvider, useSplit] = createScopedStore(
 					deleteSplit: wid(deleteSplit),
 					addView: wid(addView),
 					getViewGroup: wid(getViewGroup),
+					getView: wid(getView),
 					editView: wid(editView),
 					deleteView: wid(deleteView),
 					addViewFilter: wid(addViewFilter),
 					deleteViewFilter: wid(deleteViewFilter),
 					deleteViewGroup: wid(deleteViewGroup),
 					selectView: wid(selectView),
+					moveView: wid(moveView),
 					createViewFromStat: wid(createViewFromStat),
 				}),
 				[split?.id, split?.viewGroups, split?.type],

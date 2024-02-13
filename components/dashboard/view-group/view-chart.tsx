@@ -37,7 +37,6 @@ export const CurrentViewChart = memo(function CurrentViewChart() {
 	const view = useViewGroup((s) =>
 		s.views.find((v) => v.id === s.selectedViewId),
 	);
-	console.log(view);
 
 	if (!view) return null;
 

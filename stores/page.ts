@@ -18,6 +18,7 @@ export const [CurrentPageProvider, useCurrentPage] = createScopedStore(
 		deletePage,
 		deleteSplit,
 		addSplit,
+		getView,
 		getViewGroup,
 		addView,
 		editView,
@@ -25,6 +26,7 @@ export const [CurrentPageProvider, useCurrentPage] = createScopedStore(
 		deleteViewFilter,
 		addViewFilter,
 		selectView,
+		moveView,
 		createViewFromStat,
 		deleteView,
 	}) =>
@@ -50,6 +52,8 @@ export const [CurrentPageProvider, useCurrentPage] = createScopedStore(
 					selectView: wid(selectView),
 					createViewFromStat: wid(createViewFromStat),
 					deleteView: wid(deleteView),
+					getView: wid(getView),
+					moveView: wid(moveView),
 
 					deleteViewFilter: wid(deleteViewFilter),
 					addViewFilter: wid(addViewFilter),

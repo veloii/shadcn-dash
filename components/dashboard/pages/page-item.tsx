@@ -32,7 +32,7 @@ type PageItemProps = {
 	active?: boolean;
 	static?: boolean;
 	page: Page;
-} & Omit<React.ComponentPropsWithoutRef<"div">, "children" | "type" | "id">;
+} & Omit<React.ComponentPropsWithoutRef<"button">, "children" | "type" | "id">;
 
 export function PageItem({
 	page,
@@ -45,17 +45,23 @@ export function PageItem({
 	return (
 		<div
 			className={cn(
-				"p-1 rounded-md text-left w-full cursor-default flex gap-2 items-center text-sm transition ",
+				"rounded-md text-left w-full cursor-default flex gap-2 items-center text-sm transition ",
 				active
 					? "bg-neutral-100 dark:bg-neutral-700/70"
 					: "hover:bg-neutral-100/50 dark:hover:bg-neutral-700/50 opacity-75 active:scale-[.98]",
 				className,
 			)}
 			aria-selected={active}
-			{...props}
 		>
-			<div className="flex grow items-center justify-between gap-1">
-				<div className="flex items-center gap-2">
+			<div className="flex grow items-center justify-between">
+				<button
+					type="button"
+					className={cn(
+						"flex items-center grow p-1 min-h-9 gap-2 cursor-default",
+						!page.emoji && "pl-3",
+					)}
+					{...props}
+				>
 					{page.emoji && (
 						<div
 							className={cn(
@@ -69,13 +75,12 @@ export function PageItem({
 						</div>
 					)}
 					{page.name}
-				</div>
-				{!isStatic && (
+				</button>
+				{!isStatic && active && (
 					<div
-						className={cn(
-							"flex items-center",
-							active ? "opacity-100" : "pointer-events-none opacity-0",
-						)}
+						className={
+							"flex items-center h-full pr-1 fade-in animate-in transition"
+						}
 					>
 						<PageActions page={page} />
 					</div>

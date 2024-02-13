@@ -33,7 +33,6 @@ export function ViewActions({ view }: { view: View }) {
 
 	const addFilter = withId(useViewGroup((s) => s.addViewFilter));
 	const removeFilter = withId(useViewGroup((s) => s.deleteViewFilter));
-	console.log(view.filters);
 
 	return (
 		<>

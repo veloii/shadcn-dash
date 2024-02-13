@@ -52,6 +52,7 @@ export function ViewItem({
 					? `bg-muted text-foreground ${colorClass[view.color]}`
 					: "opacity-75 hover:bg-muted hover:opacity-100 active:scale-[.98] dark:hover:bg-muted",
 				className,
+				isStatic && "border",
 			)}
 			aria-selected={active}
 			{...props}

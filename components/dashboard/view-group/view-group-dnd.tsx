@@ -22,9 +22,10 @@ import {
 	rectSwappingStrategy,
 	useSortable,
 } from "@dnd-kit/sortable";
-import { useViewGroup } from "@/stores/view-group";
+import { ViewGroup, useViewGroup } from "@/stores/view-group";
 import { View } from "@/stores/view";
 import { useSplit } from "@/stores/split";
+import { useCurrentPage } from "@/stores/page";
 
 const DndControlContext = React.createContext({
 	disabled: false,
@@ -45,6 +46,27 @@ const withDndControl = <C,>(Component: React.FC<C>) => {
 
 export const useDndControl = () => React.useContext(DndControlContext);
 
+const itemColors: Record<Color, string> = {
+	red: "before:bg-red-500",
+	orange: "before:bg-orange-500",
+	amber: "before:bg-amber-500",
+	yellow: "before:bg-yellow-500",
+	lime: "before:bg-lime-500",
+	green: "before:bg-green-500",
+	emerald: "before:bg-emerald-500",
+	teal: "before:bg-teal-500",
+	cyan: "before:bg-cyan-500",
+	sky: "before:bg-sky-500",
+	blue: "before:bg-blue-500",
+	indigo: "before:bg-indigo-500",
+	violet: "before:bg-violet-500",
+	purple: "before:bg-purple-500",
+	fuchsia: "before:bg-fuchsia-500",
+	pink: "before:bg-pink-500",
+	rose: "before:bg-rose-500",
+	primary: "before:bg-primary",
+};
+
 export const ViewItemContainer = withDndControl(function Draggable({
 	view,
 	children,
@@ -52,6 +74,7 @@ export const ViewItemContainer = withDndControl(function Draggable({
 	const splitId = useSplit((s) => s.split?.id);
 	const viewGroupId = useViewGroup((s) => s.id);
 	const { disabled } = useDndControl();
+	const selectedViewId = useViewGroup((s) => s.selectedViewId);
 
 	const { isOver, active, attributes, listeners, transform, setNodeRef } =
 		useSortable({
@@ -60,12 +83,16 @@ export const ViewItemContainer = withDndControl(function Draggable({
 			data: {
 				splitId,
 				viewGroupId,
+				view,
+				isSelected: view.id === selectedViewId,
 				type: "view",
-			},
+			} satisfies Data,
 		});
 
 	const sameId = active?.data.current?.view.id === view.id;
 	const x = transform?.x ?? 0;
+
+	const color = active?.data.current?.view.color;
 
 	return (
 		<div
@@ -73,8 +100,10 @@ export const ViewItemContainer = withDndControl(function Draggable({
 				"relative",
 				isOver &&
 					!sameId &&
-					active &&
-					"before:h-full before:rounded-full before:absolute before:bg-muted before:top-0 before:w-1 before:[content:'']",
+					active && [
+						"before:h-full before:rounded-full before:absolute before:bg-primary before:top-0 before:w-1 before:[content:'']",
+						itemColors[color as Color],
+					],
 				x < 0 ? "before:right-0" : "before:left-0",
 				sameId && "opacity-50",
 			)}
@@ -114,10 +143,17 @@ export function ViewGroupContainer({
 	className,
 	...props
 }: { asChild?: boolean } & React.ComponentPropsWithoutRef<"div">) {
-	const { views, id } = useViewGroup();
+	const { selectedViewId, views, id } = useViewGroup();
+	const splitId = useSplit((s) => s.split?.id);
 
 	const { active, isOver, setNodeRef } = useDroppable({
 		id,
+		data: {
+			viewGroup: { views, id, selectedViewId },
+			splitId,
+			viewGroupId: id,
+			type: "view-group",
+		} satisfies Data,
 	});
 
 	const color = active?.data.current?.view.color;
@@ -144,77 +180,63 @@ export function ViewGroupContainer({
 	);
 }
 
+type Data =
+	| {
+			type: "view-group";
+			splitId: number | undefined;
+			viewGroupId: number;
+			viewGroup: ViewGroup;
+	  }
+	| {
+			type: "view";
+			splitId: number | undefined;
+			viewGroupId: number;
+			view: View;
+			isSelected: boolean;
+	  };
+
 export function PageContainer({ children }: { children: React.ReactNode }) {
 	const [activeView, setActiveView] = useState<View | null>(null);
 	const [isSelected, setIsSelected] = useState(false);
+	const page = useCurrentPage();
 
 	const handleDragStart = React.useCallback((event: DragStartEvent) => {
-		const view: View | undefined = event.active.data.current?.view;
-		if (!view) return;
+		const data = event.active.data.current as Data;
+		if (!data) return;
 
-		const isSelected: boolean | undefined =
-			event.active.data.current?.isSelected;
-		if (isSelected === undefined) return;
+		if (data.type !== "view") return;
 
-		setActiveView(view);
-		setIsSelected(isSelected);
+		setActiveView(data.view);
+		setIsSelected(data.isSelected);
 	}, []);
 
 	const handleDragEnd = React.useCallback((event: DragEndEvent) => {
-		// const fromStore: ViewStore = event.active?.data.current?.getStore();
-		// const toStore: ViewStore = event.over?.data.current?.getStore();
-		//
-		// if (!fromStore || !toStore) return;
-		//
-		// const movedView = event.active.data.current?.view;
-		// if (!movedView) return;
-		//
-		// const viewToReplace = event.over?.data.current?.view;
-		// const newIndex = viewToReplace
-		// 	? toStore.views.findIndex((v) => v.id === viewToReplace.id)
-		// 	: undefined;
-		//
-		// if (fromStore === toStore) {
-		// 	// we perform a move
-		// 	const sameStore = fromStore;
-		//
-		// 	if (!viewToReplace) {
-		// 		// we perform a move to the end
-		// 		sameStore.move(movedView.id, sameStore.views.length - 1);
-		// 		return;
-		// 	}
-		//
-		// 	// this should never evaluate to 0
-		// 	sameStore.move(movedView.id, newIndex ?? 0);
-		// 	return;
-		// }
-		//
-		// const movedViewIndex = fromStore.views.findIndex(
-		// 	(v) => v.id === movedView.id,
-		// );
-		//
-		// // we perform a copy and delete
-		// toStore.importView(movedView, newIndex);
-		// toStore.select(movedView.id);
-		// fromStore.remove(movedView.id);
-		//
-		// // we try and calculate the new index for the fromStore
-		// const fromStoreNewView =
-		// 	fromStore.views[movedViewIndex + 1] ||
-		// 	fromStore.views[movedViewIndex - 1];
-		// if (fromStoreNewView) fromStore.select(fromStoreNewView.id);
-		//
-		// setActiveView(null);
-	}, []);
+		const from = event.active.data.current as Data;
+		const to = event.over?.data.current as Data;
 
-	const handleDragOver = React.useCallback((event: DragOverEvent) => {
-		// const store: ViewStore = event.active?.data.current?.getStore();
-		// const key = event.over?.id;
-		//
-		// if (event.over?.data.current?.view) return;
-		// if (!store || !key) return setIsSelected(false);
-		//
-		// setIsSelected(store.syncKey !== key);
+		if (!from || !to) return;
+		if (from.splitId === undefined || to.splitId === undefined) return;
+		if (from.type !== "view") return;
+
+		let newIndex: undefined | number = undefined;
+
+		if (to.type === "view") {
+			const viewGroup = page.getViewGroup(to.splitId, to.viewGroupId);
+			if (!viewGroup) return;
+			newIndex = viewGroup.views.findIndex((v) => v.id === to.view.id);
+		}
+
+		if (from.viewGroupId !== to.viewGroupId) {
+			page.deleteView(from.splitId, from.viewGroupId, from.view.id);
+			page.addView(to.splitId, to.viewGroupId, from.view, newIndex);
+			page.selectView(to.splitId, to.viewGroupId, from.view.id);
+		}
+
+		if (from.viewGroupId === to.viewGroupId && newIndex !== undefined) {
+			page.moveView(from.splitId, from.viewGroupId, from.view.id, newIndex);
+		}
+
+		// TODO: select nearest view after drag
 	}, []);
 
 	const mouseSensor = useSensor(MouseSensor, {
@@ -230,13 +252,16 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 		<DndContext
 			onDragEnd={handleDragEnd}
 			onDragStart={handleDragStart}
-			onDragOver={handleDragOver}
 			sensors={sensors}
 			collisionDetection={rectIntersection}
 		>
 			{children}
 
-			<DragOverlay dropAnimation={{ duration: 250 }}>
+			<DragOverlay
+				dropAnimation={{
+					duration: 250,
+				}}
+			>
 				{activeView && (
 					<ViewItem view={activeView} static active={isSelected} />
 				)}

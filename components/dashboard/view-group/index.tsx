@@ -7,11 +7,14 @@ import { XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ViewGroupProvider, useViewGroup } from "@/stores/view-group";
 import { CurrentViewChart } from "./view-chart";
+import { ViewGroupContainer as DndContainer } from "./view-group-dnd";
 
 export const ViewGroup = memo(function ViewGroup({ id }: { id: number }) {
 	return (
 		<ViewGroupProvider id={id}>
-			<ViewGroupContent />
+			<DndContainer>
+				<ViewGroupContent />
+			</DndContainer>
 		</ViewGroupProvider>
 	);
 });

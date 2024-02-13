@@ -97,11 +97,12 @@ export const useRootStore = create(
 					return view;
 				},
 
-				addView: (
+				moveView: (
 					id: number,
 					splitId: number,
 					viewGroupId: number,
-					view: View,
+					viewId: number,
+					newIndex: number,
 				) => {
 					set((state) => {
 						const page = state.pages.find((p) => p.id === id);
@@ -110,7 +111,44 @@ export const useRootStore = create(
 							if (split.id !== splitId) return split;
 							const viewGroups = split.viewGroups.map((vg) => {
 								if (vg.id !== viewGroupId) return vg;
-								return { ...vg, views: [...vg.views, view] };
+								const views = vg.views;
+								const view = views.find((v) => v.id === viewId);
+								if (!view) return vg;
+								views.splice(views.indexOf(view), 1);
+								views.splice(newIndex, 0, view);
+								return { ...vg, views };
+							});
+							return { ...split, viewGroups };
+						});
+						return {
+							pages: state.pages.map((p) =>
+								p.id === id ? { ...p, splits } : p,
+							),
+						};
+					});
+				},
+
+				addView: (
+					id: number,
+					splitId: number,
+					viewGroupId: number,
+					view: View,
+					index?: number,
+				) => {
+					set((state) => {
+						const page = state.pages.find((p) => p.id === id);
+						if (!page) return state;
+						const splits = page.splits.map((split) => {
+							if (split.id !== splitId) return split;
+							const viewGroups = split.viewGroups.map((vg) => {
+								const views = vg.views;
+								if (vg.id !== viewGroupId) return vg;
+								if (index !== undefined) {
+									views.splice(index, 0, view);
+								} else {
+									views.push(view);
+								}
+								return { ...vg, views };
 							});
 							return { ...split, viewGroups };
 						});
@@ -217,6 +255,23 @@ export const useRootStore = create(
 					const split = page.splits.find((s) => s.id === splitId);
 					if (!split) return;
 					return split.viewGroups.find((vg) => vg.id === viewGroupId);
+				},
+
+				getView: (
+					id: number,
+					splitId: number,
+					viewGroupId: number | undefined,
+					viewId: number | undefined,
+				) => {
+					const page = get().pages.find((p) => p.id === id);
+					if (!page) return;
+					const split = page.splits.find((s) => s.id === splitId);
+					if (!split) return;
+					const viewGroup = split.viewGroups.find(
+						(vg) => vg.id === viewGroupId,
+					);
+					if (!viewGroup) return;
+					return viewGroup.views.find((v) => v.id === viewId);
 				},
 
 				addViewFilter(

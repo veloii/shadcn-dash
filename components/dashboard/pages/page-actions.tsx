@@ -25,7 +25,7 @@ export function PageActions({ page }: { page: Page }) {
 					<Button
 						variant="ghost"
 						size="icon"
-						className="relative size-6 hover:bg-foreground/10"
+						className="relative size-7 hover:bg-foreground/10"
 					>
 						<SettingsIcon className="h-4 opacity-75" />
 					</Button>
