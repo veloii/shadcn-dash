@@ -36,8 +36,8 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 		<div className="flex flex-1">
 			<div
 				className={cn(
-					"h-full flex-shrink-0 px-5 w-72 ease-in-out absolute transition bg-background py-6 pt-8 flex flex-col justify-between",
-					open ? "" : "-translate-x-full",
+					"h-full flex-shrink-0 px-5 w-72 ease-in-out absolute transition bg-background py-6 pt-8 flex flex-col justify-between duration-200",
+					open ? "" : "-translate-x-full opacity-0",
 				)}
 			>
 				<div className="space-y-8">
@@ -87,7 +87,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 					>
 						<div
 							className={cn(
-								"overflow-auto h-screen flex-grow dark:bg-background bg-white",
+								"overflow-auto h-screen flex-grow dark:bg-background bg-white relative",
 							)}
 						>
 							{children}

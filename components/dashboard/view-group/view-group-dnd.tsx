@@ -26,6 +26,7 @@ import { ViewGroup, useViewGroup } from "@/stores/view-group";
 import { View } from "@/stores/view";
 import { useSplit } from "@/stores/split";
 import { useCurrentPage } from "@/stores/page";
+import { useRootStore } from "@/stores/root";
 
 const DndControlContext = React.createContext({
 	disabled: false,
@@ -199,6 +200,7 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 	const [activeView, setActiveView] = useState<View | null>(null);
 	const [isSelected, setIsSelected] = useState(false);
 	const page = useCurrentPage();
+	const isSidebarOpen = useRootStore((s) => s.sidebarOpen);
 
 	const handleDragStart = React.useCallback((event: DragStartEvent) => {
 		const data = event.active.data.current as Data;
@@ -264,9 +266,11 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 					duration: 250,
 				}}
 			>
-				{activeView && (
-					<ViewItem view={activeView} static active={isSelected} />
-				)}
+				<div className={cn(isSidebarOpen ? "-translate-x-72" : "z-0")}>
+					{activeView && (
+						<ViewItem view={activeView} static active={isSelected} />
+					)}
+				</div>
 			</DragOverlay>
 		</DndContext>
 	);
