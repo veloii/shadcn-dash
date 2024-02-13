@@ -113,7 +113,7 @@ export function EmptyBlock() {
 
 	return (
 		<button
-			className="max-w-7xl border-dashed w-full h-96 bg-background border-2 rounded-lg grid place-items-center cursor-default"
+			className="border-dashed w-full h-96 bg-background border-2 rounded-lg grid place-items-center cursor-default"
 			type="button"
 		>
 			<div className="flex gap-4">

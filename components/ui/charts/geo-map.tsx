@@ -93,8 +93,10 @@ export function GeoMap<T>({
 			(event: React.MouseEvent<SVGPathElement>) => {
 				if (!tooltipRef.current) return;
 				if (!container.current) return;
-				const x = event.pageX - container.current.offsetLeft;
-				const y = event.pageY - container.current.offsetTop;
+				const y =
+					event.clientY - container.current.getBoundingClientRect().top - 65;
+				const x =
+					event.clientX - container.current.getBoundingClientRect().left + 10;
 				tooltipRef.current.style.transform = `translate(${x}px, ${y}px)`;
 				setTooltip({ label, value });
 			},
@@ -146,6 +148,7 @@ export function GeoMap<T>({
 					center={position.coordinates}
 					onMoveEnd={setPosition}
 					onMoveStart={hideTooltip}
+					filterZoomEvent={(e) => "type" in e && e.type !== "wheel"}
 				>
 					<Geographies geography={geoUrl}>
 						{({ geographies }) =>

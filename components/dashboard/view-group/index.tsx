@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ViewGroupProvider, useViewGroup } from "@/stores/view-group";
 import { CurrentViewChart } from "./view-chart";
 import { ViewGroupContainer as DndContainer } from "./view-group-dnd";
+import { useSplit } from "@/stores/split";
 
 export const ViewGroup = memo(function ViewGroup({ id }: { id: number }) {
 	return (
@@ -24,7 +25,7 @@ function ViewGroupContent() {
 
 	if (!hasViews)
 		return (
-			<ViewGroupContainer className="w-full max-w-sm">
+			<ViewGroupContainer className="w-full">
 				<ViewGroupEmpty />
 			</ViewGroupContainer>
 		);
@@ -47,23 +48,14 @@ function ViewGroupContainer({
 	className,
 	...props
 }: { children: React.ReactNode } & React.ComponentProps<"div">) {
-	const deleteViewGroup = useViewGroup((s) => s.deleteViewGroup);
-
 	return (
 		<div
 			className={cn(
-				"shadow-md group dark:shadow-background/50 shadow-neutral-100 relative bg-background min-h-full border rounded-lg",
+				"group dark:shadow-background/50 shadow-neutral-100 bg-background min-h-full rounded-lg",
 				className,
 			)}
 			{...props}
 		>
-			<Button
-				onClick={deleteViewGroup}
-				variant="outline"
-				className="h-7 w-7 p-1 transition group-hover:opacity-100 bg-background opacity-0 rounded-full absolute z-10 -top-2 -right-2 "
-			>
-				<XIcon />
-			</Button>
 			<div className="flex flex-col divide-y">{children}</div>
 		</div>
 	);

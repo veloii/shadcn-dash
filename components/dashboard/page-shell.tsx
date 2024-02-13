@@ -18,7 +18,7 @@ export function PageShell({
 	return (
 		<div className="space-y-4">
 			<div className="px-12 pb-36 pt-20 dark:bg-neutral-900 bg-neutral-50 -mb-32 border-b">
-				<div className="max-w-7xl mx-auto space-y-7">
+				<div className="mx-auto space-y-7">
 					{page.emoji && (
 						<EmojiPickerSelection
 							className="shadow-none dark:bg-neutral-800 hover:dark:bg-neutral-700 dark:border-0 border bg-background hover:bg-muted rounded p-2 size-12"
@@ -41,7 +41,7 @@ export function PageShell({
 				</div>
 			</div>
 			<div className={"px-12"}>
-				<div className={cn("max-w-7xl mx-auto", className)} {...props}>
+				<div className={cn("mx-auto", className)} {...props}>
 					{children}
 				</div>
 			</div>
