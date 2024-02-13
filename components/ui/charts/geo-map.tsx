@@ -26,7 +26,7 @@ const colorScales = (theme: string) =>
 			acc[color] = [
 				theme === "dark" ? darkBaseColor : lightBaseColor,
 				color === "primary"
-					? twColors.white
+					? twColors[theme === "dark" ? "white" : "black"]
 					: twColors[color][theme === "dark" ? 500 : 400],
 			];
 			return acc;
