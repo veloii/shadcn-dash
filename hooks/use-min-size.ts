@@ -12,9 +12,9 @@ export function useMinSize(id: string, px: number, fallback?: number) {
 			"[data-panel-resize-handle-id]",
 		);
 		if (!panelGroup) return;
+
 		const observer = new ResizeObserver(() => {
 			const width = panelGroup?.offsetWidth ?? 0;
-			console.log(width);
 
 			setMinSize((px / width) * 100);
 		});

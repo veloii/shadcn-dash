@@ -5,6 +5,10 @@ import { ThemeToggle } from "../theme-toggle";
 import { PageItems } from "./pages/page-item";
 import { AddPageButton } from "./pages/add-page";
 import { ScrollArea } from "../ui/scroll-area";
+import { useRootStore } from "@/stores/root";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { ChevronLeftIcon, PanelLeftCloseIcon } from "lucide-react";
 
 type SidebarCategoryProps = {
 	children: ReactNode;
@@ -25,16 +29,34 @@ function UserProfile() {
 }
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
+	const open = useRootStore((s) => s.sidebarOpen);
+	const toggle = useRootStore((s) => s.toggleSidebar);
+
 	return (
-		<div className="flex flex-1 divide-x dark:divide-neutral-800">
-			<div className="flex-shrink-0 w-72 bg-background px-5 py-6 pt-8 flex flex-col justify-between">
+		<div className="flex flex-1">
+			<div
+				className={cn(
+					"h-full flex-shrink-0 px-5 w-72 ease-in-out absolute transition bg-background py-6 pt-8 flex flex-col justify-between",
+					open ? "" : "-translate-x-full",
+				)}
+			>
 				<div className="space-y-8">
-					<Image
-						src={logo}
-						alt="Vosa Logo"
-						width={76}
-						className="invert dark:invert-0"
-					/>
+					<div className="flex justify-between items-center">
+						<Image
+							src={logo}
+							alt="Vosa Logo"
+							width={76}
+							className="invert dark:invert-0 object-contain"
+						/>
+						<Button
+							size="sm"
+							className="size-8 p-0 opacity-90"
+							variant="ghost"
+							onClick={toggle}
+						>
+							<ChevronLeftIcon className="h-5" />
+						</Button>
+					</div>
 					<div className="space-y-2">
 						<SidebarCategory title={"Your Pages"}>
 							<PageItems />
@@ -49,10 +71,31 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 					<ThemeToggle />
 				</div>
 			</div>
-			<ScrollArea className="h-screen flex-grow dark:bg-background bg-white">
-				{children}
-				<div className="pb-16" />
-			</ScrollArea>
+			<div className="w-full flex-1 flex-col flex">
+				{/* TODO: fix this mess */}
+				<div
+					className={cn(
+						"flex-1 transition-transform ease-in-out duration-200",
+						open ? "border-l translate-x-72" : "translate-x-0",
+					)}
+				>
+					<div
+						className={cn(
+							"transition-[width] duration-0",
+							open ? "w-[calc(100vw-18rem)] delay-100" : "w-screen",
+						)}
+					>
+						<div
+							className={cn(
+								"overflow-auto h-screen flex-grow dark:bg-background bg-white",
+							)}
+						>
+							{children}
+							<div className="pb-16" />
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -14,16 +14,13 @@ export function ViewGroupToolbar({
 	const Comp = asChild ? Slot : "div";
 
 	return (
-		<div className={cn("flex p-3 relative gap-4 bg-muted/40")}>
-			{/* <ScrollArea> */}
-			<Comp className={cn("flex gap-4", className)} {...props}>
-				{children}
-			</Comp>
-
-			{/* 	<ScrollBar orientation="horizontal" /> */}
-			{/* </ScrollArea> */}
+		<Comp
+			className={cn("flex gap-4 p-2.5 bg-muted/40 flex-wrap", className)}
+			{...props}
+		>
+			{children}
 
 			<AddViewButton disabled={loading} />
-		</div>
+		</Comp>
 	);
 }

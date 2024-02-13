@@ -243,7 +243,9 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
 		activationConstraint: { distance: 10 },
 	});
 
-	const touchSensor = useSensor(TouchSensor);
+	const touchSensor = useSensor(TouchSensor, {
+		activationConstraint: { distance: 10 },
+	});
 	const keyboardSensor = useSensor(KeyboardSensor);
 
 	const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);

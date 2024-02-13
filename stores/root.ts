@@ -19,8 +19,13 @@ export const useRootStore = create(
 			{
 				pages: [] as Page[],
 				selectedId: null as number | null,
+				sidebarOpen: true,
 			},
 			(set, get) => ({
+				toggleSidebar: () => {
+					set((state) => ({ sidebarOpen: !state.sidebarOpen }));
+				},
+
 				addPage: (page: Page) => {
 					set((state) => ({
 						pages: [...state.pages, page],
