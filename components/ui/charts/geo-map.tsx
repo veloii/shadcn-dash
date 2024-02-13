@@ -57,7 +57,7 @@ export function GeoMap<T>({
 	data: propData,
 	color,
 }: ChartProps<T>) {
-	const { theme } = useTheme();
+	const { resolvedTheme: theme } = useTheme();
 	const [colorScale, setColorScale] = useState(() =>
 		createColorScale(color, theme || "light"),
 	);
