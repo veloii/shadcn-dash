@@ -47,7 +47,7 @@ export const [ViewGroupProvider, useViewGroup] = createScopedStore(
 				[
 					viewGroup.id,
 					viewGroup.selectedViewId,
-					...viewGroup.views,
+					viewGroup.views,
 					viewGroup.views.length,
 				],
 			);
