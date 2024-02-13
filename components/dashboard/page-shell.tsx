@@ -51,6 +51,8 @@ export function PageShell({
 							className="border-none shadow-none p-0 focus-visible:ring-0 text-base h-auto rounded-none"
 							placeholder="Click to add text."
 							type="text"
+							value={page.description}
+							onChange={(e) => edit(page.id, { description: e.target.value })}
 						/>
 					</div>
 				</div>

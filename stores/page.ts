@@ -6,6 +6,7 @@ import { useMemo } from "react";
 export type Page = {
 	id: Id;
 	name: string;
+	description?: string;
 	emoji?: string;
 	splits: Split[];
 };
@@ -58,7 +59,7 @@ export const [CurrentPageProvider, useCurrentPage] = createScopedStore(
 					deleteViewFilter: wid(deleteViewFilter),
 					addViewFilter: wid(addViewFilter),
 				}),
-				[page.id, page.splits, page.name, page.emoji],
+				[page.id, page.splits, page.name, page.emoji, page.description],
 			);
 		},
 );
