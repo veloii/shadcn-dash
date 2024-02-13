@@ -74,6 +74,8 @@ export const useRootStore = create(
 						id: randomId(),
 						type: "line",
 						color: "blue",
+						// we change it based on the stat, defualt to time
+						display: "time",
 						filters: {},
 					};
 					// TODO: duplicated code, i dont believe we need addView

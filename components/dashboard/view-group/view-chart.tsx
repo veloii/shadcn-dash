@@ -3,7 +3,7 @@ import { BarChart } from "../../ui/charts/bar-chart";
 import { LineChart } from "../../ui/charts/line-chart";
 import { subDays } from "date-fns";
 import { GeoMap } from "@/components/ui/charts/geo-map";
-import { View } from "@/stores/view";
+import { View, isViewTypeDisabled } from "@/stores/view";
 import { useViewGroup } from "@/stores/view-group";
 import { memo } from "react";
 
@@ -37,6 +37,14 @@ export const CurrentViewChart = memo(function CurrentViewChart() {
 	const view = useViewGroup((s) =>
 		s.views.find((v) => v.id === s.selectedViewId),
 	);
+
+	if (view && isViewTypeDisabled(view)) {
+		return (
+			<div className="flex justify-center items-center min-h-[432px]">
+				Sorry, this view is not available.
+			</div>
+		);
+	}
 
 	if (!view) return null;
 
