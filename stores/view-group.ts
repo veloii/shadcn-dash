@@ -45,10 +45,12 @@ export const [ViewGroupProvider, useViewGroup] = createScopedStore(
 					deleteView: wid(deleteView),
 				}),
 				[
+					// ughhh why did i have to make a huge store
 					viewGroup.id,
 					viewGroup.selectedViewId,
 					viewGroup.views,
 					viewGroup.views.length,
+					viewGroup.views.map((v) => v.id),
 				],
 			);
 		},

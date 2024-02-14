@@ -13,6 +13,8 @@ export const wrap =
 
 export type Id = number;
 
+// i have committed a sin
+// then i made simple-scoped-zustand to try and fix it...
 export const useRootStore = create(
 	persist(
 		combine(
